@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+		{
+			"name": "ARM-Debug",
+			"cwd": "${workspaceRoot}",
+			"executable": "${workspaceRoot}\\output\\STM32F103_LoRa.elf",
+			"svdFile": "d:\\\\VSCode\\VSCode_portable\\data\\user-data\\User\\globalStorage\\semyon-ivanov.cortex-builder\\SVD\\STM32F103x\\STM32F103x.svd",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "openocd",
+			"device": "cortex-m4",
+			"interface": "swd",
+			"runToEntryPoint": "main",
+			"configFiles": [
+				"D:\\VSCode\\openocd-20211118\\OpenOCD-20211118-0.11.0\\share\\openocd\\scripts\\interface\\stlink.cfg",
+				"D:\\VSCode\\openocd-20211118\\OpenOCD-20211118-0.11.0\\share\\openocd\\scripts\\target\\stm32f1x.cfg"
+			]
+		}
+
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "sx126x.h": "c"
+    },
+    "cortex-debug.variableUseNaturalFormat": false
+}
