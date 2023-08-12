@@ -18,15 +18,21 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "SX126X_HAL_H"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sx126x.h"
+#include "sx127x.h"
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+    // Распиновка
+    /*
+      PA3 --> NSS
+      PA5 --> SCK
+      PA6 --> MISO
+      PA7 --> MOSI
+    */
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -44,7 +50,7 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-sx126x_cfg modem;
+sx127x_cfg modem;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,58 +74,43 @@ void LoRa_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_SPI1_Init();
-  MX_TIM2_Init();
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
-  LoRa_Init();
-  /* USER CODE BEGIN 2 */
-
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+    /* USER CODE BEGIN 1 */
+    /* USER CODE END 1 */
+    /* MCU Configuration--------------------------------------------------------*/
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+    HAL_Init();
+    /* USER CODE BEGIN Init */
+    /* USER CODE END Init */
+    /* Configure the system clock */
+    SystemClock_Config();
+    /* USER CODE BEGIN SysInit */
+    /* USER CODE END SysInit */
+    /* Initialize all configured peripherals */
+    MX_GPIO_Init();
+    MX_SPI1_Init();
+    MX_TIM2_Init();
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+    LoRa_Init();
+    /* USER CODE BEGIN 2 *
+    /* USER CODE END 2 */
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
     uint8_t data[2] = {0x13, 0x34};
-    // init sx126x
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
-    sx126x_Init(&hspi1, &modem);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
 
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
-    sx126x_SendData(&hspi1, &modem, data, 2);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
-  while (1)
-  {
-    /* USER CODE END WHILE */
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
-    sx126x_SendData(&hspi1, &modem, data, 2);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
-    HAL_Delay(1000);
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+    // init sx127x
+    if (!sx127x_Init(&hspi1, &modem)){
+        while(1);
+        // logMessage --> SX127X не подключен
+    }
+    // logMessage --> SX127X подключен
+    uint8_t status_TX = 0;
+    while(1){
+      /* USER CODE END WHILE */
+      status_TX = sx127x_Transmit(&hspi1, &modem, data, 2);
+      HAL_Delay(5000);
+      /* USER CODE BEGIN 3 */
+    }
+    /* USER CODE END 3 */
 }
 
 
@@ -272,23 +263,20 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void LoRa_Init(){
-    modem.StdbyConfig = SX126X_STDBY_RC;
-    modem.PacketType = SX126X_PACKET_TYPE_LORA;
-    modem.RfFreq = 820000000;
-    modem.Power = 0xF7;
-    modem.RampTime = SX126X_RAMP_800U;
+    modem.RfFreq = 434000000;
+    modem.Power = POWER_20db;
     modem.TX_Base_Address = 0;
-    modem.RX_Base_Address = 128;
-    modem.spredingFactor = SF8;
-    modem.BandWidth = SX126X_BW_250;
-    modem.crcRate = SX126X_CR_4_5;
+    modem.RX_Base_Address = 0;
+    modem.spredingFactor = SF7;
+    modem.BandWidth = SX127X_BW_125;
+    modem.crcRate = SX127X_CR_4_5;
     modem.LowDataRateOptimize = 0x00;
-    modem.SyncWord = 0x1424;
-    modem.PreambleLen = 8;
-    modem.HeaderType = SX126X_HEADER_TYPE_VARIABLE_LENGTH;
-    modem.crcType = SX126X_CRC_OFF;
-    modem.InvertIq = SX126X_STANDARD_IQ;
+    modem.SyncWord = 0x34;
+    modem.Preamble = 0x000C;
+    modem.payloadLength = 2;
     modem.IrqStatus = 0;
+    modem.bufferIndex = 0;
+    modem.HeaderMode = SX127X_HEADER_EXPLICIT;
 }
 /* USER CODE END 4 */
 

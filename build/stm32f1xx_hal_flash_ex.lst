@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 1
 
 
    1              		.cpu cortex-m3
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
   30:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *
   31:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
   32:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * All rights reserved.</center></h2>
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 2
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 2
 
 
   33:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
   87:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** /**
   88:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @}
   89:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   */ 
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 3
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 3
 
 
   90:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  144:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** /**
  145:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @brief  Perform a mass erase or erase the specified FLASH memory pages
  146:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @note   To correctly run this function, the @ref HAL_FLASH_Unlock() function
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 4
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 4
 
 
  147:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *         must be called before.
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  201:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         /*Mass erase to be done*/
  202:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         FLASH_MassErase(FLASH_BANK_2);
  203:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 5
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 5
 
 
  204:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         /* Wait for last operation to be completed */
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  258:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****           
  259:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****           if (status != HAL_OK)
  260:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****           {
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 6
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 6
 
 
  261:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****             /* In case of error, stop erase procedure and return the faulty address */
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  315:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *         contains the configuration information for the erasing.
  316:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *
  317:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @retval HAL_StatusTypeDef HAL Status
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 7
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 7
 
 
  318:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   */
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  372:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** /** @defgroup FLASHEx_Exported_Functions_Group2 Option Bytes Programming functions
  373:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****  *  @brief   Option Bytes Programming functions
  374:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 8
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 8
 
 
  375:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** @verbatim   
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  429:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  430:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   /* Return the erase status */
  431:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   return status;
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 9
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 9
 
 
  432:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** }
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  486:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       return status;
  487:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     }
  488:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   }
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 10
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 10
 
 
  489:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  543:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @param  DATAAdress Address of the option byte DATA
  544:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *          This parameter can be one of the following values:
  545:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *            @arg @ref OB_DATA_ADDRESS_DATA0
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 11
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 11
 
 
  546:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   *            @arg @ref OB_DATA_ADDRESS_DATA1
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
   30              		@ frame_needed = 0, uses_anonymous_args = 0
   31              		@ link register save eliminated.
  597:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   /* Check the parameters */
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 12
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 12
 
 
  598:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   assert_param(IS_FLASH_BANK(Banks));
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
   52              	.L2:
   53 001c 00000000 		.word	pFlash
   54 0020 00200240 		.word	1073881088
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 13
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 13
 
 
   55              		.cfi_endproc
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  676:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #if defined(OB_WRP_PAGES64TO95MASK)
  677:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   WRP2_Data = (uint16_t)((WriteProtectPage & OB_WRP_PAGES64TO95MASK) >> 16U);
  678:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #endif /* OB_WRP_PAGES64TO95MASK */
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 14
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 14
 
 
  679:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #if defined(OB_WRP_PAGES32TO47MASK)
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  733:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         /* Wait for last operation to be completed */
  734:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         status = FLASH_WaitForLastOperation((uint32_t)FLASH_TIMEOUT_VALUE);
  735:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       }
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 15
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 15
 
 
  736:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #endif /* FLASH_WRP2_WRP2 */
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  790:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   WRP0_Data = (uint16_t)(WriteProtectPage & OB_WRP_PAGES0TO31MASK);
  791:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #endif /* OB_WRP_PAGES0TO31MASK */
  792:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 16
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 16
 
 
  793:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #if defined(OB_WRP_PAGES16TO31MASK)
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  847:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         status = FLASH_WaitForLastOperation((uint32_t)FLASH_TIMEOUT_VALUE);
  848:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       }
  849:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #endif /* FLASH_WRP1_WRP1 */
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 17
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 17
 
 
  850:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  904:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  905:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     /* Wait for last operation to be completed */
  906:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     status = FLASH_WaitForLastOperation((uint32_t)FLASH_TIMEOUT_VALUE);
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 18
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 18
 
 
  907:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  961:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     OB->USER = (UserConfig | 0xF0U);
  962:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #else
  963:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     OB->USER = (UserConfig | 0x88U);
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 19
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 19
 
 
  964:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #endif /* FLASH_BANK2_END */
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
 1018:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @brief  Return the FLASH Write Protection Option Bytes value.
 1019:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @retval The FLASH Write Protection Option Bytes value
 1020:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   */
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 20
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 20
 
 
 1021:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** static uint32_t FLASH_OB_GetWRP(void)
@@ -1198,7 +1198,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  103              		.loc 1 1040 13 is_stmt 0 view .LVU16
  104 0000 044B     		ldr	r3, .L10
  105 0002 DB69     		ldr	r3, [r3, #28]
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 21
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 21
 
 
  106              	.LVL2:
@@ -1258,7 +1258,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
 1062:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   /* Return the User Option Byte */
 1063:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   return (uint8_t)((READ_REG(FLASH->OBR) & FLASH_OBR_USER) >> FLASH_POSITION_IWDGSW_BIT);
  141              		.loc 1 1063 3 view .LVU24
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 22
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 22
 
 
  142              		.loc 1 1063 21 is_stmt 0 view .LVU25
@@ -1318,7 +1318,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  896:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   { 
  189              		.loc 1 896 5 is_stmt 0 view .LVU35
  190 000c 00B1     		cbz	r0, .L18
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 23
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 23
 
 
  191              	.L16:
@@ -1378,7 +1378,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  916:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       
  232              		.loc 1 916 7 is_stmt 0 view .LVU49
  233 0046 074B     		ldr	r3, .L19+8
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 24
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 24
 
 
  234 0048 1880     		strh	r0, [r3]	@ movhi
@@ -1438,7 +1438,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  281              		.loc 1 944 3 view .LVU58
  950:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   
  282              		.loc 1 950 3 view .LVU59
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 25
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 25
 
 
  950:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   
@@ -1498,7 +1498,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  323 0038 E9E7     		b	.L22
  324              	.L26:
  325 003a 00BF     		.align	2
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 26
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 26
 
 
  326              	.L25:
@@ -1558,7 +1558,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  372              		.loc 1 1014 3 is_stmt 1 view .LVU83
 1015:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  373              		.loc 1 1015 1 is_stmt 0 view .LVU84
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 27
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 27
 
 
  374 0010 70BD     		pop	{r4, r5, r6, pc}
@@ -1618,7 +1618,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  421              		@ args = 0, pretend = 0, frame = 0
  422              		@ frame_needed = 0, uses_anonymous_args = 0
  423 0000 38B5     		push	{r3, r4, r5, lr}
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 28
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 28
 
 
  424              	.LCFI3:
@@ -1678,7 +1678,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  464 0022 2361     		str	r3, [r4, #16]
  415:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  465              		.loc 1 415 5 view .LVU108
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 29
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 29
 
 
  466 0024 2369     		ldr	r3, [r4, #16]
@@ -1738,7 +1738,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  512              		@ frame_needed = 0, uses_anonymous_args = 0
  645:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   HAL_StatusTypeDef status = HAL_OK;
  513              		.loc 1 645 1 is_stmt 0 view .LVU119
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 30
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 30
 
 
  514 0000 10B5     		push	{r4, lr}
@@ -1798,7 +1798,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  552              		.loc 1 699 5 is_stmt 1 view .LVU135
  699:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  553              		.loc 1 699 22 is_stmt 0 view .LVU136
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 31
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 31
 
 
  554 001a 0E4B     		ldr	r3, .L45
@@ -1858,7 +1858,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  714:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       }
  595              		.loc 1 714 18 view .LVU150
  596 0052 F0E7     		b	.L41
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 32
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 32
 
 
  597              	.L46:
@@ -1918,7 +1918,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  642              		.loc 1 818 3 is_stmt 1 view .LVU161
  818:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  643              		.loc 1 818 12 is_stmt 0 view .LVU162
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 33
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 33
 
 
  644 000c 4CF25030 		movw	r0, #50000
@@ -1978,7 +1978,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  683 0034 084A     		ldr	r2, .L53+4
  684 0036 1369     		ldr	r3, [r2, #16]
  685 0038 23F01003 		bic	r3, r3, #16
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 34
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 34
 
 
  686 003c 1361     		str	r3, [r2, #16]
@@ -2038,7 +2038,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  732 0000 254B     		ldr	r3, .L73
  733 0002 1B7E     		ldrb	r3, [r3, #24]	@ zero_extendqisi2
  734 0004 012B     		cmp	r3, #1
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 35
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 35
 
 
  735 0006 44D0     		beq	.L63
@@ -2098,7 +2098,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  473:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       return status;
  773              		.loc 1 473 7 is_stmt 1 view .LVU204
  473:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****       return status;
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 36
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 36
 
 
  774              		.loc 1 473 7 view .LVU205
@@ -2158,7 +2158,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  813              		.loc 1 503 3 is_stmt 1 view .LVU220
  503:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   {
  814              		.loc 1 503 14 is_stmt 0 view .LVU221
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 37
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 37
 
 
  815 004a 2368     		ldr	r3, [r4]
@@ -2218,7 +2218,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  493:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     if (status != HAL_OK)
  853              		.loc 1 493 5 is_stmt 1 view .LVU238
  493:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     if (status != HAL_OK)
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 38
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 38
 
 
  854              		.loc 1 493 14 is_stmt 0 view .LVU239
@@ -2278,7 +2278,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  510:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     }
  892              		.loc 1 510 7 view .LVU256
  510:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****     }
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 39
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 39
 
 
  893              		.loc 1 510 14 is_stmt 0 view .LVU257
@@ -2338,7 +2338,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  941 0008 FFF7FEFF 		bl	FLASH_OB_GetWRP
  942              	.LVL77:
  532:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 40
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 40
 
 
  943              		.loc 1 532 20 view .LVU266
@@ -2398,7 +2398,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  561:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   }
  986              		.loc 1 561 13 is_stmt 0 view .LVU280
  987 0006 064B     		ldr	r3, .L81+4
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 41
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 41
 
 
  988 0008 D869     		ldr	r0, [r3, #28]
@@ -2458,7 +2458,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
 1075:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   * @{
 1076:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   */
 1077:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 42
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 42
 
 
 1078:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** /** @addtogroup FLASH_Private_Functions
@@ -2518,7 +2518,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
 1111:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** #endif /* FLASH_BANK2_END */
 1112:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** }
  1048              		.loc 1 1112 1 is_stmt 0 view .LVU294
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 43
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 43
 
 
  1049 001a 7047     		bx	lr
@@ -2578,7 +2578,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1096              		.loc 1 168 3 discriminator 2 view .LVU303
  170:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   {
  1097              		.loc 1 170 3 discriminator 2 view .LVU304
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 44
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 44
 
 
  170:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   {
@@ -2638,7 +2638,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1134 0036 A342     		cmp	r3, r4
  1135 0038 28D9     		bls	.L89
  283:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****           
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 45
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 45
 
 
  1136              		.loc 1 283 11 is_stmt 1 view .LVU323
@@ -2698,7 +2698,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1176 006a 0120     		movs	r0, #1
  1177 006c FFF7FEFF 		bl	FLASH_MassErase
  1178              	.LVL98:
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 46
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 46
 
 
  222:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****         
@@ -2758,7 +2758,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1221              		.cfi_restore 6
  1222              		.cfi_restore 14
  165:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 47
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 47
 
 
  1223              		.loc 1 165 3 view .LVU350
@@ -2818,7 +2818,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1271 000e 1A76     		strb	r2, [r3, #24]
  324:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c **** 
  1272              		.loc 1 324 3 discriminator 2 view .LVU359
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 48
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 48
 
 
  327:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   {
@@ -2878,7 +2878,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1308              		.loc 1 362 5 is_stmt 1 view .LVU378
  1309 0036 8068     		ldr	r0, [r0, #8]
  1310              	.LVL109:
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 49
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 49
 
 
  362:Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c ****   }
@@ -2934,58 +2934,58 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 1
  1354              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
  1355              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h"
  1356              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h"
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s 			page 50
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s 			page 50
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f1xx_hal_flash_ex.c
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:16     .text.FLASH_MassErase:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:23     .text.FLASH_MassErase:00000000 FLASH_MassErase
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:53     .text.FLASH_MassErase:0000001c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:59     .text.FLASH_OB_GetWRP:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:65     .text.FLASH_OB_GetWRP:00000000 FLASH_OB_GetWRP
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:81     .text.FLASH_OB_GetWRP:00000008 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:86     .text.FLASH_OB_GetRDP:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:92     .text.FLASH_OB_GetRDP:00000000 FLASH_OB_GetRDP
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:123    .text.FLASH_OB_GetRDP:00000014 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:128    .text.FLASH_OB_GetUser:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:134    .text.FLASH_OB_GetUser:00000000 FLASH_OB_GetUser
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:151    .text.FLASH_OB_GetUser:0000000c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:156    .text.FLASH_OB_RDP_LevelConfig:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:162    .text.FLASH_OB_RDP_LevelConfig:00000000 FLASH_OB_RDP_LevelConfig
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:248    .text.FLASH_OB_RDP_LevelConfig:0000005c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:255    .text.FLASH_OB_UserConfig:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:261    .text.FLASH_OB_UserConfig:00000000 FLASH_OB_UserConfig
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:327    .text.FLASH_OB_UserConfig:0000003c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:334    .text.FLASH_OB_ProgramData:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:340    .text.FLASH_OB_ProgramData:00000000 FLASH_OB_ProgramData
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:404    .text.FLASH_OB_ProgramData:00000038 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:410    .text.HAL_FLASHEx_OBErase:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:417    .text.HAL_FLASHEx_OBErase:00000000 HAL_FLASHEx_OBErase
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:494    .text.HAL_FLASHEx_OBErase:00000048 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:500    .text.FLASH_OB_EnableWRP:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:506    .text.FLASH_OB_EnableWRP:00000000 FLASH_OB_EnableWRP
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:600    .text.FLASH_OB_EnableWRP:00000054 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:607    .text.FLASH_OB_DisableWRP:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:613    .text.FLASH_OB_DisableWRP:00000000 FLASH_OB_DisableWRP
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:708    .text.FLASH_OB_DisableWRP:00000054 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:715    .text.HAL_FLASHEx_OBProgram:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:722    .text.HAL_FLASHEx_OBProgram:00000000 HAL_FLASHEx_OBProgram
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:909    .text.HAL_FLASHEx_OBProgram:00000098 $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:914    .text.HAL_FLASHEx_OBGetConfig:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:921    .text.HAL_FLASHEx_OBGetConfig:00000000 HAL_FLASHEx_OBGetConfig
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:964    .text.HAL_FLASHEx_OBGetUserData:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:971    .text.HAL_FLASHEx_OBGetUserData:00000000 HAL_FLASHEx_OBGetUserData
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1011   .text.HAL_FLASHEx_OBGetUserData:0000001c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1017   .text.FLASH_PageErase:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1024   .text.FLASH_PageErase:00000000 FLASH_PageErase
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1053   .text.FLASH_PageErase:0000001c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1059   .text.HAL_FLASHEx_Erase:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1066   .text.HAL_FLASHEx_Erase:00000000 HAL_FLASHEx_Erase
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1234   .text.HAL_FLASHEx_Erase:0000009c $d
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1240   .text.HAL_FLASHEx_Erase_IT:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1247   .text.HAL_FLASHEx_Erase_IT:00000000 HAL_FLASHEx_Erase_IT
-C:\Users\vladk\AppData\Local\Temp\cc82yoTc.s:1344   .text.HAL_FLASHEx_Erase_IT:00000058 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:16     .text.FLASH_MassErase:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:23     .text.FLASH_MassErase:00000000 FLASH_MassErase
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:53     .text.FLASH_MassErase:0000001c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:59     .text.FLASH_OB_GetWRP:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:65     .text.FLASH_OB_GetWRP:00000000 FLASH_OB_GetWRP
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:81     .text.FLASH_OB_GetWRP:00000008 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:86     .text.FLASH_OB_GetRDP:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:92     .text.FLASH_OB_GetRDP:00000000 FLASH_OB_GetRDP
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:123    .text.FLASH_OB_GetRDP:00000014 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:128    .text.FLASH_OB_GetUser:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:134    .text.FLASH_OB_GetUser:00000000 FLASH_OB_GetUser
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:151    .text.FLASH_OB_GetUser:0000000c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:156    .text.FLASH_OB_RDP_LevelConfig:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:162    .text.FLASH_OB_RDP_LevelConfig:00000000 FLASH_OB_RDP_LevelConfig
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:248    .text.FLASH_OB_RDP_LevelConfig:0000005c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:255    .text.FLASH_OB_UserConfig:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:261    .text.FLASH_OB_UserConfig:00000000 FLASH_OB_UserConfig
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:327    .text.FLASH_OB_UserConfig:0000003c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:334    .text.FLASH_OB_ProgramData:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:340    .text.FLASH_OB_ProgramData:00000000 FLASH_OB_ProgramData
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:404    .text.FLASH_OB_ProgramData:00000038 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:410    .text.HAL_FLASHEx_OBErase:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:417    .text.HAL_FLASHEx_OBErase:00000000 HAL_FLASHEx_OBErase
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:494    .text.HAL_FLASHEx_OBErase:00000048 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:500    .text.FLASH_OB_EnableWRP:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:506    .text.FLASH_OB_EnableWRP:00000000 FLASH_OB_EnableWRP
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:600    .text.FLASH_OB_EnableWRP:00000054 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:607    .text.FLASH_OB_DisableWRP:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:613    .text.FLASH_OB_DisableWRP:00000000 FLASH_OB_DisableWRP
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:708    .text.FLASH_OB_DisableWRP:00000054 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:715    .text.HAL_FLASHEx_OBProgram:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:722    .text.HAL_FLASHEx_OBProgram:00000000 HAL_FLASHEx_OBProgram
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:909    .text.HAL_FLASHEx_OBProgram:00000098 $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:914    .text.HAL_FLASHEx_OBGetConfig:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:921    .text.HAL_FLASHEx_OBGetConfig:00000000 HAL_FLASHEx_OBGetConfig
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:964    .text.HAL_FLASHEx_OBGetUserData:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:971    .text.HAL_FLASHEx_OBGetUserData:00000000 HAL_FLASHEx_OBGetUserData
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1011   .text.HAL_FLASHEx_OBGetUserData:0000001c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1017   .text.FLASH_PageErase:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1024   .text.FLASH_PageErase:00000000 FLASH_PageErase
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1053   .text.FLASH_PageErase:0000001c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1059   .text.HAL_FLASHEx_Erase:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1066   .text.HAL_FLASHEx_Erase:00000000 HAL_FLASHEx_Erase
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1234   .text.HAL_FLASHEx_Erase:0000009c $d
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1240   .text.HAL_FLASHEx_Erase_IT:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1247   .text.HAL_FLASHEx_Erase_IT:00000000 HAL_FLASHEx_Erase_IT
+C:\Users\vladk\AppData\Local\Temp\ccIvR8yq.s:1344   .text.HAL_FLASHEx_Erase_IT:00000058 $d
 
 UNDEFINED SYMBOLS
 pFlash

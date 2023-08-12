@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 1
 
 
    1              		.cpu cortex-m3
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
   30:Core/Src/stm32f1xx_hal_msp.c **** /* USER CODE END TD */
   31:Core/Src/stm32f1xx_hal_msp.c **** 
   32:Core/Src/stm32f1xx_hal_msp.c **** /* Private define ------------------------------------------------------------*/
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 2
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 2
 
 
   33:Core/Src/stm32f1xx_hal_msp.c **** /* USER CODE BEGIN Define */
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
   44 000c 9A69     		ldr	r2, [r3, #24]
   45 000e 02F00102 		and	r2, r2, #1
   46 0012 0092     		str	r2, [sp]
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 3
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 3
 
 
   47              		.loc 1 69 3 view .LVU5
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
   83:Core/Src/stm32f1xx_hal_msp.c **** * @retval None
   84:Core/Src/stm32f1xx_hal_msp.c **** */
   85:Core/Src/stm32f1xx_hal_msp.c **** void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 4
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 4
 
 
   86:Core/Src/stm32f1xx_hal_msp.c **** {
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  111:Core/Src/stm32f1xx_hal_msp.c ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
  112:Core/Src/stm32f1xx_hal_msp.c **** 
  113:Core/Src/stm32f1xx_hal_msp.c ****   /* USER CODE BEGIN SPI1_MspInit 1 */
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 5
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 5
 
 
  114:Core/Src/stm32f1xx_hal_msp.c **** 
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  157              		.loc 1 96 5 view .LVU32
  158 0040 019B     		ldr	r3, [sp, #4]
  159              	.LBE5:
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 6
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 6
 
 
   96:Core/Src/stm32f1xx_hal_msp.c ****     /**SPI1 GPIO Configuration
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  198 006a D4E7     		b	.L5
  199              	.L10:
  200              		.align	2
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 7
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 7
 
 
  201              	.L9:
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  139:Core/Src/stm32f1xx_hal_msp.c ****     PA6     ------> SPI1_MISO
  140:Core/Src/stm32f1xx_hal_msp.c ****     PA7     ------> SPI1_MOSI
  141:Core/Src/stm32f1xx_hal_msp.c ****     */
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 8
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 8
 
 
  142:Core/Src/stm32f1xx_hal_msp.c ****     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7);
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  157:Core/Src/stm32f1xx_hal_msp.c **** void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
  158:Core/Src/stm32f1xx_hal_msp.c **** {
  275              		.loc 1 158 1 is_stmt 1 view -0
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 9
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 9
 
 
  276              		.cfi_startproc
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  317              		.section	.text.HAL_TIM_Base_MspDeInit,"ax",%progbits
  318              		.align	1
  319              		.global	HAL_TIM_Base_MspDeInit
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 10
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 10
 
 
  320              		.syntax unified
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  352              	.L27:
  353 0018 00100240 		.word	1073876992
  354              		.cfi_endproc
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 11
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 11
 
 
  355              	.LFE69:
@@ -612,25 +612,25 @@ ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 1
  364              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
  365              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h"
  366              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h"
-ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s 			page 12
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s 			page 12
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f1xx_hal_msp.c
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:16     .text.HAL_MspInit:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:24     .text.HAL_MspInit:00000000 HAL_MspInit
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:75     .text.HAL_MspInit:0000002c $d
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:80     .text.HAL_SPI_MspInit:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:87     .text.HAL_SPI_MspInit:00000000 HAL_SPI_MspInit
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:202    .text.HAL_SPI_MspInit:0000006c $d
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:208    .text.HAL_SPI_MspDeInit:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:215    .text.HAL_SPI_MspDeInit:00000000 HAL_SPI_MspDeInit
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:258    .text.HAL_SPI_MspDeInit:00000020 $d
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:265    .text.HAL_TIM_Base_MspInit:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:272    .text.HAL_TIM_Base_MspInit:00000000 HAL_TIM_Base_MspInit
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:318    .text.HAL_TIM_Base_MspDeInit:00000000 $t
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:325    .text.HAL_TIM_Base_MspDeInit:00000000 HAL_TIM_Base_MspDeInit
-C:\Users\vladk\AppData\Local\Temp\ccCcXjT7.s:353    .text.HAL_TIM_Base_MspDeInit:00000018 $d
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:16     .text.HAL_MspInit:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:24     .text.HAL_MspInit:00000000 HAL_MspInit
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:75     .text.HAL_MspInit:0000002c $d
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:80     .text.HAL_SPI_MspInit:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:87     .text.HAL_SPI_MspInit:00000000 HAL_SPI_MspInit
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:202    .text.HAL_SPI_MspInit:0000006c $d
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:208    .text.HAL_SPI_MspDeInit:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:215    .text.HAL_SPI_MspDeInit:00000000 HAL_SPI_MspDeInit
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:258    .text.HAL_SPI_MspDeInit:00000020 $d
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:265    .text.HAL_TIM_Base_MspInit:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:272    .text.HAL_TIM_Base_MspInit:00000000 HAL_TIM_Base_MspInit
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:318    .text.HAL_TIM_Base_MspDeInit:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:325    .text.HAL_TIM_Base_MspDeInit:00000000 HAL_TIM_Base_MspDeInit
+C:\Users\vladk\AppData\Local\Temp\ccWC8zRi.s:353    .text.HAL_TIM_Base_MspDeInit:00000018 $d
 
 UNDEFINED SYMBOLS
 HAL_GPIO_Init

@@ -1,0 +1,2583 @@
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"sx127x.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.readReg,"ax",%progbits
+  16              		.align	1
+  17              		.global	readReg
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	readReg:
+  25              	.LVL0:
+  26              	.LFB89:
+  27              		.file 1 "Core/MyLib/Src/sx127x.c"
+   1:Core/MyLib/Src/sx127x.c **** #include "sx127x.h"
+   2:Core/MyLib/Src/sx127x.c **** #include "main.h"
+   3:Core/MyLib/Src/sx127x.c **** #include "stdint.h"
+   4:Core/MyLib/Src/sx127x.c **** 
+   5:Core/MyLib/Src/sx127x.c **** uint8_t sx127x_Init(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+   6:Core/MyLib/Src/sx127x.c ****     uint8_t version;
+   7:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_VERSION, &version, 1);
+   8:Core/MyLib/Src/sx127x.c ****     if (version != 0x12){
+   9:Core/MyLib/Src/sx127x.c ****         return 0;
+  10:Core/MyLib/Src/sx127x.c ****     }
+  11:Core/MyLib/Src/sx127x.c ****     gotoMode(hspi, SX127X_MODE_SLEEP);
+  12:Core/MyLib/Src/sx127x.c ****     // Включение режима LoRa
+  13:Core/MyLib/Src/sx127x.c ****     setLoRaMode(hspi);
+  14:Core/MyLib/Src/sx127x.c ****     setFrequency(hspi, modem);
+  15:Core/MyLib/Src/sx127x.c ****     // Мощность передатчика
+  16:Core/MyLib/Src/sx127x.c ****     setPower(hspi, modem, PA_OUTPUT_PA_BOOST_PIN);
+  17:Core/MyLib/Src/sx127x.c ****     setOCP(hspi, 100);
+  18:Core/MyLib/Src/sx127x.c ****     // Установка начального адриса FIFO
+  19:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO_TX_BASE_ADDR, &modem->TX_Base_Address, 1);
+  20:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO_RX_BASE_ADDR, &modem->RX_Base_Address, 1);
+  21:Core/MyLib/Src/sx127x.c ****     // Усиление низкого уровня шума
+  22:Core/MyLib/Src/sx127x.c ****     setLNA(hspi);
+  23:Core/MyLib/Src/sx127x.c ****     // Автоматическая регулировка усиления
+  24:Core/MyLib/Src/sx127x.c ****     setAGC(hspi);
+  25:Core/MyLib/Src/sx127x.c ****     setSpreadingFactor(hspi, modem);
+  26:Core/MyLib/Src/sx127x.c ****     setBandwidth_CRC(hspi, modem);
+  27:Core/MyLib/Src/sx127x.c ****     setTimeout(hspi);
+  28:Core/MyLib/Src/sx127x.c ****     setCRC_ON(hspi);
+  29:Core/MyLib/Src/sx127x.c ****     setPreamble(hspi, modem);
+  30:Core/MyLib/Src/sx127x.c ****     // setPayloadLengt(hspi, modem);
+  31:Core/MyLib/Src/sx127x.c ****     // setSyncWord(hspi, modem);
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 2
+
+
+  32:Core/MyLib/Src/sx127x.c ****     gotoMode(hspi, SX127X_MODE_STDBY);
+  33:Core/MyLib/Src/sx127x.c ****     return 1;
+  34:Core/MyLib/Src/sx127x.c **** }
+  35:Core/MyLib/Src/sx127x.c **** 
+  36:Core/MyLib/Src/sx127x.c **** uint8_t sx127x_Transmit(SPI_HandleTypeDef* hspi, sx127x_cfg* modem, uint8_t* data, uint8_t len){
+  37:Core/MyLib/Src/sx127x.c ****     uint8_t irq = 0xFF;
+  38:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+  39:Core/MyLib/Src/sx127x.c ****     int timeout = 500;
+  40:Core/MyLib/Src/sx127x.c **** 
+  41:Core/MyLib/Src/sx127x.c ****     gotoMode(hspi, SX127X_MODE_STDBY);
+  42:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_FIFO_TX_BASE_ADDR, &read, 1);
+  43:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO_ADDR_PTR, &read, 1);
+  44:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PAYLOAD_LENGTH, &len, 1);
+  45:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO, &data, len);
+  46:Core/MyLib/Src/sx127x.c ****     gotoMode(hspi, SX127X_MODE_TX);
+  47:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO, &modem->bufferIndex, 1);
+  48:Core/MyLib/Src/sx127x.c ****     while(1){
+  49:Core/MyLib/Src/sx127x.c **** 		readReg(hspi, SX127X_REG_IRQ_FLAGS, &read, 1);
+  50:Core/MyLib/Src/sx127x.c **** 		if((read & 0x08)!=0){
+  51:Core/MyLib/Src/sx127x.c **** 			writeReg(hspi, SX127X_REG_IRQ_FLAGS, &irq, 1);
+  52:Core/MyLib/Src/sx127x.c **** 			gotoMode(hspi, SX127X_MODE_STDBY);
+  53:Core/MyLib/Src/sx127x.c **** 			return 1;
+  54:Core/MyLib/Src/sx127x.c **** 		}
+  55:Core/MyLib/Src/sx127x.c **** 		else{
+  56:Core/MyLib/Src/sx127x.c **** 			if(--timeout==0){
+  57:Core/MyLib/Src/sx127x.c **** 				gotoMode(hspi, SX127X_MODE_STDBY);
+  58:Core/MyLib/Src/sx127x.c **** 				return 0;
+  59:Core/MyLib/Src/sx127x.c **** 			}
+  60:Core/MyLib/Src/sx127x.c **** 		}
+  61:Core/MyLib/Src/sx127x.c **** 	}
+  62:Core/MyLib/Src/sx127x.c **** 
+  63:Core/MyLib/Src/sx127x.c ****     // setStandby(hspi, modem);
+  64:Core/MyLib/Src/sx127x.c **** }
+  65:Core/MyLib/Src/sx127x.c **** 
+  66:Core/MyLib/Src/sx127x.c **** uint8_t sx127x_Receive(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+  67:Core/MyLib/Src/sx127x.c ****     if (!available(hspi, modem)){
+  68:Core/MyLib/Src/sx127x.c ****         return -1;
+  69:Core/MyLib/Src/sx127x.c ****     }
+  70:Core/MyLib/Src/sx127x.c ****     modem->bufferIndex++;
+  71:Core/MyLib/Src/sx127x.c ****     uint8_t TXdata;
+  72:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_FIFO, &TXdata, 1);
+  73:Core/MyLib/Src/sx127x.c ****     return TXdata;
+  74:Core/MyLib/Src/sx127x.c **** }
+  75:Core/MyLib/Src/sx127x.c **** 
+  76:Core/MyLib/Src/sx127x.c **** void setLoRaMode(SPI_HandleTypeDef* hspi){
+  77:Core/MyLib/Src/sx127x.c ****     uint8_t    data;
+  78:Core/MyLib/Src/sx127x.c **** 	uint8_t    read;
+  79:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_OP_MODE, &read, 1);
+  80:Core/MyLib/Src/sx127x.c **** 	data = read | 0x80;
+  81:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+  82:Core/MyLib/Src/sx127x.c **** }
+  83:Core/MyLib/Src/sx127x.c **** 
+  84:Core/MyLib/Src/sx127x.c **** void gotoMode(SPI_HandleTypeDef* hspi, uint8_t mode){
+  85:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+  86:Core/MyLib/Src/sx127x.c **** 	uint8_t data;
+  87:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_OP_MODE, &read, 1);
+  88:Core/MyLib/Src/sx127x.c **** 	data = read;
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 3
+
+
+  89:Core/MyLib/Src/sx127x.c **** 
+  90:Core/MyLib/Src/sx127x.c **** 	if(mode == SX127X_MODE_SLEEP){
+  91:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x00;
+  92:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_STDBY){
+  93:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x01;
+  94:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_TX){
+  95:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x03;
+  96:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_CONTINUOUS){
+  97:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x05;
+  98:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_SINGLE){
+  99:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x06;
+ 100:Core/MyLib/Src/sx127x.c **** 	}
+ 101:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 102:Core/MyLib/Src/sx127x.c **** }
+ 103:Core/MyLib/Src/sx127x.c **** 
+ 104:Core/MyLib/Src/sx127x.c **** void setAGC(SPI_HandleTypeDef* hspi){
+ 105:Core/MyLib/Src/sx127x.c ****     uint8_t AGC = 0x04;
+ 106:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_3, &AGC, 1);
+ 107:Core/MyLib/Src/sx127x.c **** }
+ 108:Core/MyLib/Src/sx127x.c **** uint8_t available(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 109:Core/MyLib/Src/sx127x.c ****     uint8_t bytes;
+ 110:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_RX_NB_BYTES, &bytes, 1);
+ 111:Core/MyLib/Src/sx127x.c ****     return (bytes - modem->bufferIndex);
+ 112:Core/MyLib/Src/sx127x.c **** }
+ 113:Core/MyLib/Src/sx127x.c **** 
+ 114:Core/MyLib/Src/sx127x.c **** uint8_t parserPacket(SPI_HandleTypeDef* hspi, sx127x_cfg* modem, uint8_t size){
+ 115:Core/MyLib/Src/sx127x.c ****     uint8_t lengh_packet = 0;
+ 116:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_IRQ_FLAGS, &modem->IrqStatus, 1);
+ 117:Core/MyLib/Src/sx127x.c **** 
+ 118:Core/MyLib/Src/sx127x.c **** }
+ 119:Core/MyLib/Src/sx127x.c **** 
+ 120:Core/MyLib/Src/sx127x.c **** 
+ 121:Core/MyLib/Src/sx127x.c **** void setSyncWord(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 122:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_SYNC_WORD, &modem->SyncWord, 1);
+ 123:Core/MyLib/Src/sx127x.c **** }
+ 124:Core/MyLib/Src/sx127x.c **** 
+ 125:Core/MyLib/Src/sx127x.c **** void LoRa_begin(SPI_HandleTypeDef* hspi){
+ 126:Core/MyLib/Src/sx127x.c ****     uint8_t version = 0x00;
+ 127:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 128:Core/MyLib/Src/sx127x.c ****     // while (version != 0x12 && version != 0x22) {
+ 129:Core/MyLib/Src/sx127x.c ****     //     readReg(hspi, SX127X_REG_VERSION, &read, 1);
+ 130:Core/MyLib/Src/sx127x.c ****     //     version = read;
+ 131:Core/MyLib/Src/sx127x.c ****     // }
+ 132:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0x80;
+ 133:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 134:Core/MyLib/Src/sx127x.c ****     data |= SX127X_MODE_STDBY;
+ 135:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 136:Core/MyLib/Src/sx127x.c **** }
+ 137:Core/MyLib/Src/sx127x.c **** 
+ 138:Core/MyLib/Src/sx127x.c **** void setBandwidth(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 139:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &modem->BandWidth, 1);
+ 140:Core/MyLib/Src/sx127x.c **** }
+ 141:Core/MyLib/Src/sx127x.c **** 
+ 142:Core/MyLib/Src/sx127x.c **** void setSleep(SPI_HandleTypeDef* hspi){
+ 143:Core/MyLib/Src/sx127x.c ****     uint8_t data = SX127X_LONG_RANGE_MODE | SX127X_MODE_SLEEP;
+ 144:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 145:Core/MyLib/Src/sx127x.c **** }
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 4
+
+
+ 146:Core/MyLib/Src/sx127x.c **** 
+ 147:Core/MyLib/Src/sx127x.c **** void sendMode(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 148:Core/MyLib/Src/sx127x.c ****     uint8_t data;
+ 149:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 150:Core/MyLib/Src/sx127x.c ****     setPayloadLengt(hspi, modem);
+ 151:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_OP_MODE, &read, 1);
+ 152:Core/MyLib/Src/sx127x.c ****     data = read;
+ 153:Core/MyLib/Src/sx127x.c ****     data |= SX127X_MODE_TX | 0x80;
+ 154:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 155:Core/MyLib/Src/sx127x.c **** }
+ 156:Core/MyLib/Src/sx127x.c **** 
+ 157:Core/MyLib/Src/sx127x.c **** void setFrequency(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 158:Core/MyLib/Src/sx127x.c ****     uint8_t  data;
+ 159:Core/MyLib/Src/sx127x.c **** 	uint32_t F;
+ 160:Core/MyLib/Src/sx127x.c **** 
+ 161:Core/MyLib/Src/sx127x.c ****     F = ((uint64_t) modem->RfFreq << 19) / 32000000;
+ 162:Core/MyLib/Src/sx127x.c **** 
+ 163:Core/MyLib/Src/sx127x.c ****     // write Msb:
+ 164:Core/MyLib/Src/sx127x.c **** 	data = (uint8_t) (F >> 16);
+ 165:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MSB, &data, 1);
+ 166:Core/MyLib/Src/sx127x.c **** 
+ 167:Core/MyLib/Src/sx127x.c **** 	// write Mid:
+ 168:Core/MyLib/Src/sx127x.c **** 	data = (uint8_t) (F >> 8);
+ 169:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MID, &data, 1);
+ 170:Core/MyLib/Src/sx127x.c **** 
+ 171:Core/MyLib/Src/sx127x.c **** 	// write Lsb:
+ 172:Core/MyLib/Src/sx127x.c **** 	data = (uint8_t) (F >> 0);
+ 173:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_LSB, &data, 1);
+ 174:Core/MyLib/Src/sx127x.c **** }
+ 175:Core/MyLib/Src/sx127x.c **** 
+ 176:Core/MyLib/Src/sx127x.c **** void setPower(SPI_HandleTypeDef* hspi, sx127x_cfg* modem, uint8_t outputPin){
+ 177:Core/MyLib/Src/sx127x.c ****     // if(PA_OUTPUT_RFO_PIN == outputPin){
+ 178:Core/MyLib/Src/sx127x.c ****     //     // RFO
+ 179:Core/MyLib/Src/sx127x.c ****     //     if(modem->Power < 0){
+ 180:Core/MyLib/Src/sx127x.c ****     //         modem->Power = 0;
+ 181:Core/MyLib/Src/sx127x.c ****     //     }else if(modem->Power > 14){
+ 182:Core/MyLib/Src/sx127x.c ****     //         modem->Power = 14;
+ 183:Core/MyLib/Src/sx127x.c ****     //     }
+ 184:Core/MyLib/Src/sx127x.c ****     //     modem->Power |= 0x70;
+ 185:Core/MyLib/Src/sx127x.c ****     //     writeReg(hspi, SX127X_REG_PA_CONFIG, modem->Power, 1);
+ 186:Core/MyLib/Src/sx127x.c ****     // }else{
+ 187:Core/MyLib/Src/sx127x.c ****     //     // PA BOOST
+ 188:Core/MyLib/Src/sx127x.c ****     //     if(modem->Power > 17){
+ 189:Core/MyLib/Src/sx127x.c ****     //         if(modem->Power > 20){
+ 190:Core/MyLib/Src/sx127x.c ****     //             modem->Power = 20;
+ 191:Core/MyLib/Src/sx127x.c ****     //         }
+ 192:Core/MyLib/Src/sx127x.c ****     //         modem->Power -= 3;
+ 193:Core/MyLib/Src/sx127x.c ****     //         uint8_t data = 0x87;
+ 194:Core/MyLib/Src/sx127x.c ****     //         // High Power +20 dBm
+ 195:Core/MyLib/Src/sx127x.c ****     //         writeReg(hspi, SX127X_REG_PA_DAC, &data, 1);
+ 196:Core/MyLib/Src/sx127x.c ****     //         // Защита по току
+ 197:Core/MyLib/Src/sx127x.c ****     //         setOCP(hspi, 140);
+ 198:Core/MyLib/Src/sx127x.c ****     //     }else{
+ 199:Core/MyLib/Src/sx127x.c ****     //         if(modem->Power < 2){
+ 200:Core/MyLib/Src/sx127x.c ****     //             modem->Power = 2;
+ 201:Core/MyLib/Src/sx127x.c ****     //         }
+ 202:Core/MyLib/Src/sx127x.c ****     //         // +17dBm
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 5
+
+
+ 203:Core/MyLib/Src/sx127x.c ****     //         uint8_t data = 0x84;
+ 204:Core/MyLib/Src/sx127x.c ****     //         writeReg(hspi, SX127X_REG_PA_DAC, &data, 1);
+ 205:Core/MyLib/Src/sx127x.c ****     //         setOCP(hspi, 100);
+ 206:Core/MyLib/Src/sx127x.c ****     //     }
+ 207:Core/MyLib/Src/sx127x.c ****     //     uint8_t data = SX127X_TX_POWER_PA_BOOST | (modem->Power - 2);
+ 208:Core/MyLib/Src/sx127x.c ****     //     writeReg(hspi, SX127X_REG_PA_DAC, &data, 1);
+ 209:Core/MyLib/Src/sx127x.c ****     // }
+ 210:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PA_CONFIG, &modem->Power, 1);
+ 211:Core/MyLib/Src/sx127x.c **** }
+ 212:Core/MyLib/Src/sx127x.c **** 
+ 213:Core/MyLib/Src/sx127x.c **** // set over current protection:
+ 214:Core/MyLib/Src/sx127x.c **** void setOCP(SPI_HandleTypeDef* hspi, uint8_t current){
+ 215:Core/MyLib/Src/sx127x.c ****     uint8_t	OcpTrim = 0;
+ 216:Core/MyLib/Src/sx127x.c **** 
+ 217:Core/MyLib/Src/sx127x.c **** 	if(current<45)
+ 218:Core/MyLib/Src/sx127x.c **** 		current = 45;
+ 219:Core/MyLib/Src/sx127x.c **** 	if(current>240)
+ 220:Core/MyLib/Src/sx127x.c **** 		current = 240;
+ 221:Core/MyLib/Src/sx127x.c **** 
+ 222:Core/MyLib/Src/sx127x.c **** 	if(current <= 120)
+ 223:Core/MyLib/Src/sx127x.c **** 		OcpTrim = (current - 45)/5;
+ 224:Core/MyLib/Src/sx127x.c **** 	else if(current <= 240)
+ 225:Core/MyLib/Src/sx127x.c **** 		OcpTrim = (current + 30)/10;
+ 226:Core/MyLib/Src/sx127x.c **** 
+ 227:Core/MyLib/Src/sx127x.c ****     // OcpTrim = OcpTrim + (1 << 5);
+ 228:Core/MyLib/Src/sx127x.c ****     OcpTrim = 0x20 | (0xF1 & OcpTrim);
+ 229:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OCP, &OcpTrim, 1);
+ 230:Core/MyLib/Src/sx127x.c ****     // // enable or disable +20 dBm option on PA_BOOST pin
+ 231:Core/MyLib/Src/sx127x.c ****     // uint8_t pa_boost = 0x04;
+ 232:Core/MyLib/Src/sx127x.c ****     // writeReg(hspi, SX127X_REG_PA_DAC, &pa_boost, 1);
+ 233:Core/MyLib/Src/sx127x.c ****     // // set PA config
+ 234:Core/MyLib/Src/sx127x.c ****     // uint8_t pa_con =0xCF;
+ 235:Core/MyLib/Src/sx127x.c ****     // writeReg(hspi, SX127X_REG_PA_CONFIG, &pa_con, 1);
+ 236:Core/MyLib/Src/sx127x.c ****     // // set gain and boost LNA config
+ 237:Core/MyLib/Src/sx127x.c ****     // uint8_t lna =0x03;
+ 238:Core/MyLib/Src/sx127x.c ****     // writeReg(hspi, SX127X_REG_LNA, &lna, 1);
+ 239:Core/MyLib/Src/sx127x.c ****     // // enable or disable AGC
+ 240:Core/MyLib/Src/sx127x.c ****     // uint8_t agc1 =0xD4;
+ 241:Core/MyLib/Src/sx127x.c ****     // writeReg(hspi, SX127X_REG_MODEM_CONFIG_3, &agc1, 1);
+ 242:Core/MyLib/Src/sx127x.c ****     HAL_Delay(1);
+ 243:Core/MyLib/Src/sx127x.c **** }
+ 244:Core/MyLib/Src/sx127x.c **** 
+ 245:Core/MyLib/Src/sx127x.c **** // set LNA gain:
+ 246:Core/MyLib/Src/sx127x.c **** void setLNA(SPI_HandleTypeDef* hspi){
+ 247:Core/MyLib/Src/sx127x.c ****     uint8_t lna;
+ 248:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_LNA, &lna, 1);
+ 249:Core/MyLib/Src/sx127x.c ****     lna |= 0x20;
+ 250:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_LNA, &lna, 1);
+ 251:Core/MyLib/Src/sx127x.c **** }
+ 252:Core/MyLib/Src/sx127x.c **** 
+ 253:Core/MyLib/Src/sx127x.c **** void setSpreadingFactor(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 254:Core/MyLib/Src/sx127x.c ****     uint8_t	data;
+ 255:Core/MyLib/Src/sx127x.c **** 	uint8_t	read;
+ 256:Core/MyLib/Src/sx127x.c ****     uint8_t SF;
+ 257:Core/MyLib/Src/sx127x.c **** 
+ 258:Core/MyLib/Src/sx127x.c **** 	if(modem->spredingFactor > 12)
+ 259:Core/MyLib/Src/sx127x.c **** 		SF = 12;
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 6
+
+
+ 260:Core/MyLib/Src/sx127x.c **** 	if(modem->spredingFactor < 7)
+ 261:Core/MyLib/Src/sx127x.c **** 		SF = 7;
+ 262:Core/MyLib/Src/sx127x.c **** 
+ 263:Core/MyLib/Src/sx127x.c **** 	readReg(hspi, SX127X_REG_MODEM_CONFIG_2, &read, 1);
+ 264:Core/MyLib/Src/sx127x.c **** 
+ 265:Core/MyLib/Src/sx127x.c **** 	data = (SF << 4) + (read & 0x0F);
+ 266:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 267:Core/MyLib/Src/sx127x.c **** 
+ 268:Core/MyLib/Src/sx127x.c ****     uint8_t optimize = 0x03;
+ 269:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_DETECTION_OPTIMIZE, &optimize, 1);
+ 270:Core/MyLib/Src/sx127x.c ****     uint8_t threshold = 0x0A;
+ 271:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_DETECTION_THRESHOLD, &threshold, 1);
+ 272:Core/MyLib/Src/sx127x.c **** 
+ 273:Core/MyLib/Src/sx127x.c **** }
+ 274:Core/MyLib/Src/sx127x.c **** 
+ 275:Core/MyLib/Src/sx127x.c **** void setPayloadLengt(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 276:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PAYLOAD_LENGTH, &modem->payloadLength, 1);
+ 277:Core/MyLib/Src/sx127x.c **** }
+ 278:Core/MyLib/Src/sx127x.c **** 
+ 279:Core/MyLib/Src/sx127x.c **** void setCRC_ON(SPI_HandleTypeDef* hspi){
+ 280:Core/MyLib/Src/sx127x.c ****     uint8_t read, data;
+ 281:Core/MyLib/Src/sx127x.c **** 
+ 282:Core/MyLib/Src/sx127x.c **** 	readReg(hspi, SX127X_REG_MODEM_CONFIG_2, &read, 1);
+ 283:Core/MyLib/Src/sx127x.c **** 
+ 284:Core/MyLib/Src/sx127x.c **** 	data = read | 0x07;
+ 285:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 286:Core/MyLib/Src/sx127x.c **** }
+ 287:Core/MyLib/Src/sx127x.c **** 
+ 288:Core/MyLib/Src/sx127x.c **** void setTimeout(SPI_HandleTypeDef* hspi){
+ 289:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0xFF;
+ 290:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_SYMB_TIMEOUT, &data, 1);
+ 291:Core/MyLib/Src/sx127x.c **** }
+ 292:Core/MyLib/Src/sx127x.c **** 
+ 293:Core/MyLib/Src/sx127x.c **** // set bandwidth, coding rate and expilicit mode:
+ 294:Core/MyLib/Src/sx127x.c **** 	// 8 bit RegModemConfig --> | X | X | X | X | X | X | X | X |
+ 295:Core/MyLib/Src/sx127x.c **** 	//       bits represent --> |   bandwidth   |     CR    |I/E|
+ 296:Core/MyLib/Src/sx127x.c **** 
+ 297:Core/MyLib/Src/sx127x.c **** void setBandwidth_CRC(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 298:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0;
+ 299:Core/MyLib/Src/sx127x.c ****     data = (modem->BandWidth << 4) | (modem->crcRate << 1) | (0 << 0);
+ 300:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 301:Core/MyLib/Src/sx127x.c **** }
+ 302:Core/MyLib/Src/sx127x.c **** 
+ 303:Core/MyLib/Src/sx127x.c **** void setPreamble(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 304:Core/MyLib/Src/sx127x.c ****     uint8_t msb = modem->Preamble >> 8;
+ 305:Core/MyLib/Src/sx127x.c ****     uint8_t lsb = modem->Preamble >> 0;
+ 306:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PREAMBLE_MSB, &msb, 1);
+ 307:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PREAMBLE_LSB, &lsb, 1);
+ 308:Core/MyLib/Src/sx127x.c **** }
+ 309:Core/MyLib/Src/sx127x.c **** 
+ 310:Core/MyLib/Src/sx127x.c **** void setStandby(SPI_HandleTypeDef* hspi){
+ 311:Core/MyLib/Src/sx127x.c ****     uint8_t data = SX127X_LONG_RANGE_MODE | SX127X_MODE_STDBY;
+ 312:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 313:Core/MyLib/Src/sx127x.c **** }
+ 314:Core/MyLib/Src/sx127x.c **** 
+ 315:Core/MyLib/Src/sx127x.c **** void readReg(SPI_HandleTypeDef* hspi, uint8_t address, uint8_t* pData, uint8_t len){
+  28              		.loc 1 315 84 view -0
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 7
+
+
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		.loc 1 315 84 is_stmt 0 view .LVU1
+  33 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 20
+  36              		.cfi_offset 4, -20
+  37              		.cfi_offset 5, -16
+  38              		.cfi_offset 6, -12
+  39              		.cfi_offset 7, -8
+  40              		.cfi_offset 14, -4
+  41 0002 83B0     		sub	sp, sp, #12
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 32
+  44 0004 0446     		mov	r4, r0
+  45 0006 1546     		mov	r5, r2
+  46 0008 1E46     		mov	r6, r3
+  47 000a 8DF80710 		strb	r1, [sp, #7]
+ 316:Core/MyLib/Src/sx127x.c ****     address &= 0x7F;
+  48              		.loc 1 316 5 is_stmt 1 view .LVU2
+  49              		.loc 1 316 13 is_stmt 0 view .LVU3
+  50 000e CBB2     		uxtb	r3, r1
+  51              	.LVL1:
+  52              		.loc 1 316 13 view .LVU4
+  53 0010 03F07F03 		and	r3, r3, #127
+  54 0014 8DF80730 		strb	r3, [sp, #7]
+ 317:Core/MyLib/Src/sx127x.c ****     uint32_t Timeout = 2;
+  55              		.loc 1 317 5 is_stmt 1 view .LVU5
+  56              	.LVL2:
+ 318:Core/MyLib/Src/sx127x.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+  57              		.loc 1 318 5 view .LVU6
+  58 0018 0C4F     		ldr	r7, .L3
+  59 001a 0022     		movs	r2, #0
+  60              	.LVL3:
+  61              		.loc 1 318 5 is_stmt 0 view .LVU7
+  62 001c 0821     		movs	r1, #8
+  63              	.LVL4:
+  64              		.loc 1 318 5 view .LVU8
+  65 001e 3846     		mov	r0, r7
+  66              	.LVL5:
+  67              		.loc 1 318 5 view .LVU9
+  68 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  69              	.LVL6:
+ 319:Core/MyLib/Src/sx127x.c ****     HAL_SPI_Transmit(hspi, &address, 1, Timeout);
+  70              		.loc 1 319 5 is_stmt 1 view .LVU10
+  71 0024 0223     		movs	r3, #2
+  72 0026 0122     		movs	r2, #1
+  73 0028 0DF10701 		add	r1, sp, #7
+  74 002c 2046     		mov	r0, r4
+  75 002e FFF7FEFF 		bl	HAL_SPI_Transmit
+  76              	.LVL7:
+ 320:Core/MyLib/Src/sx127x.c ****     HAL_SPI_Receive(hspi, pData, len, Timeout);
+  77              		.loc 1 320 5 view .LVU11
+  78 0032 0223     		movs	r3, #2
+  79 0034 3246     		mov	r2, r6
+  80 0036 2946     		mov	r1, r5
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 8
+
+
+  81 0038 2046     		mov	r0, r4
+  82 003a FFF7FEFF 		bl	HAL_SPI_Receive
+  83              	.LVL8:
+ 321:Core/MyLib/Src/sx127x.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
+  84              		.loc 1 321 5 view .LVU12
+  85 003e 0122     		movs	r2, #1
+  86 0040 0821     		movs	r1, #8
+  87 0042 3846     		mov	r0, r7
+  88 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  89              	.LVL9:
+ 322:Core/MyLib/Src/sx127x.c **** }
+  90              		.loc 1 322 1 is_stmt 0 view .LVU13
+  91 0048 03B0     		add	sp, sp, #12
+  92              	.LCFI2:
+  93              		.cfi_def_cfa_offset 20
+  94              		@ sp needed
+  95 004a F0BD     		pop	{r4, r5, r6, r7, pc}
+  96              	.LVL10:
+  97              	.L4:
+  98              		.loc 1 322 1 view .LVU14
+  99              		.align	2
+ 100              	.L3:
+ 101 004c 00080140 		.word	1073809408
+ 102              		.cfi_endproc
+ 103              	.LFE89:
+ 105              		.section	.text.available,"ax",%progbits
+ 106              		.align	1
+ 107              		.global	available
+ 108              		.syntax unified
+ 109              		.thumb
+ 110              		.thumb_func
+ 111              		.fpu softvfp
+ 113              	available:
+ 114              	.LVL11:
+ 115              	.LFB71:
+ 108:Core/MyLib/Src/sx127x.c ****     uint8_t bytes;
+ 116              		.loc 1 108 62 is_stmt 1 view -0
+ 117              		.cfi_startproc
+ 118              		@ args = 0, pretend = 0, frame = 8
+ 119              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108:Core/MyLib/Src/sx127x.c ****     uint8_t bytes;
+ 120              		.loc 1 108 62 is_stmt 0 view .LVU16
+ 121 0000 10B5     		push	{r4, lr}
+ 122              	.LCFI3:
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 4, -8
+ 125              		.cfi_offset 14, -4
+ 126 0002 82B0     		sub	sp, sp, #8
+ 127              	.LCFI4:
+ 128              		.cfi_def_cfa_offset 16
+ 129 0004 0C46     		mov	r4, r1
+ 109:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_RX_NB_BYTES, &bytes, 1);
+ 130              		.loc 1 109 5 is_stmt 1 view .LVU17
+ 110:Core/MyLib/Src/sx127x.c ****     return (bytes - modem->bufferIndex);
+ 131              		.loc 1 110 5 view .LVU18
+ 132 0006 0123     		movs	r3, #1
+ 133 0008 0DF10702 		add	r2, sp, #7
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 9
+
+
+ 134 000c 1321     		movs	r1, #19
+ 135              	.LVL12:
+ 110:Core/MyLib/Src/sx127x.c ****     return (bytes - modem->bufferIndex);
+ 136              		.loc 1 110 5 is_stmt 0 view .LVU19
+ 137 000e FFF7FEFF 		bl	readReg
+ 138              	.LVL13:
+ 111:Core/MyLib/Src/sx127x.c **** }
+ 139              		.loc 1 111 5 is_stmt 1 view .LVU20
+ 111:Core/MyLib/Src/sx127x.c **** }
+ 140              		.loc 1 111 26 is_stmt 0 view .LVU21
+ 141 0012 637E     		ldrb	r3, [r4, #25]	@ zero_extendqisi2
+ 111:Core/MyLib/Src/sx127x.c **** }
+ 142              		.loc 1 111 19 view .LVU22
+ 143 0014 9DF80700 		ldrb	r0, [sp, #7]	@ zero_extendqisi2
+ 144 0018 C01A     		subs	r0, r0, r3
+ 112:Core/MyLib/Src/sx127x.c **** 
+ 145              		.loc 1 112 1 view .LVU23
+ 146 001a C0B2     		uxtb	r0, r0
+ 147 001c 02B0     		add	sp, sp, #8
+ 148              	.LCFI5:
+ 149              		.cfi_def_cfa_offset 8
+ 150              		@ sp needed
+ 151 001e 10BD     		pop	{r4, pc}
+ 112:Core/MyLib/Src/sx127x.c **** 
+ 152              		.loc 1 112 1 view .LVU24
+ 153              		.cfi_endproc
+ 154              	.LFE71:
+ 156              		.section	.text.sx127x_Receive,"ax",%progbits
+ 157              		.align	1
+ 158              		.global	sx127x_Receive
+ 159              		.syntax unified
+ 160              		.thumb
+ 161              		.thumb_func
+ 162              		.fpu softvfp
+ 164              	sx127x_Receive:
+ 165              	.LVL14:
+ 166              	.LFB67:
+  66:Core/MyLib/Src/sx127x.c ****     if (!available(hspi, modem)){
+ 167              		.loc 1 66 67 is_stmt 1 view -0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 8
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+  66:Core/MyLib/Src/sx127x.c ****     if (!available(hspi, modem)){
+ 171              		.loc 1 66 67 is_stmt 0 view .LVU26
+ 172 0000 30B5     		push	{r4, r5, lr}
+ 173              	.LCFI6:
+ 174              		.cfi_def_cfa_offset 12
+ 175              		.cfi_offset 4, -12
+ 176              		.cfi_offset 5, -8
+ 177              		.cfi_offset 14, -4
+ 178 0002 83B0     		sub	sp, sp, #12
+ 179              	.LCFI7:
+ 180              		.cfi_def_cfa_offset 24
+ 181 0004 0546     		mov	r5, r0
+ 182 0006 0C46     		mov	r4, r1
+  67:Core/MyLib/Src/sx127x.c ****         return -1;
+ 183              		.loc 1 67 5 is_stmt 1 view .LVU27
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 10
+
+
+  67:Core/MyLib/Src/sx127x.c ****         return -1;
+ 184              		.loc 1 67 10 is_stmt 0 view .LVU28
+ 185 0008 FFF7FEFF 		bl	available
+ 186              	.LVL15:
+  67:Core/MyLib/Src/sx127x.c ****         return -1;
+ 187              		.loc 1 67 8 view .LVU29
+ 188 000c 68B1     		cbz	r0, .L9
+  70:Core/MyLib/Src/sx127x.c ****     uint8_t TXdata;
+ 189              		.loc 1 70 5 is_stmt 1 view .LVU30
+  70:Core/MyLib/Src/sx127x.c ****     uint8_t TXdata;
+ 190              		.loc 1 70 10 is_stmt 0 view .LVU31
+ 191 000e 637E     		ldrb	r3, [r4, #25]	@ zero_extendqisi2
+  70:Core/MyLib/Src/sx127x.c ****     uint8_t TXdata;
+ 192              		.loc 1 70 23 view .LVU32
+ 193 0010 0133     		adds	r3, r3, #1
+ 194 0012 6376     		strb	r3, [r4, #25]
+  71:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_FIFO, &TXdata, 1);
+ 195              		.loc 1 71 5 is_stmt 1 view .LVU33
+  72:Core/MyLib/Src/sx127x.c ****     return TXdata;
+ 196              		.loc 1 72 5 view .LVU34
+ 197 0014 0123     		movs	r3, #1
+ 198 0016 0DF10702 		add	r2, sp, #7
+ 199 001a 0021     		movs	r1, #0
+ 200 001c 2846     		mov	r0, r5
+ 201 001e FFF7FEFF 		bl	readReg
+ 202              	.LVL16:
+  73:Core/MyLib/Src/sx127x.c **** }
+ 203              		.loc 1 73 5 view .LVU35
+  73:Core/MyLib/Src/sx127x.c **** }
+ 204              		.loc 1 73 12 is_stmt 0 view .LVU36
+ 205 0022 9DF80700 		ldrb	r0, [sp, #7]	@ zero_extendqisi2
+ 206              	.L8:
+  74:Core/MyLib/Src/sx127x.c **** 
+ 207              		.loc 1 74 1 view .LVU37
+ 208 0026 03B0     		add	sp, sp, #12
+ 209              	.LCFI8:
+ 210              		.cfi_remember_state
+ 211              		.cfi_def_cfa_offset 12
+ 212              		@ sp needed
+ 213 0028 30BD     		pop	{r4, r5, pc}
+ 214              	.LVL17:
+ 215              	.L9:
+ 216              	.LCFI9:
+ 217              		.cfi_restore_state
+  68:Core/MyLib/Src/sx127x.c ****     }
+ 218              		.loc 1 68 16 view .LVU38
+ 219 002a FF20     		movs	r0, #255
+ 220 002c FBE7     		b	.L8
+ 221              		.cfi_endproc
+ 222              	.LFE67:
+ 224              		.section	.text.parserPacket,"ax",%progbits
+ 225              		.align	1
+ 226              		.global	parserPacket
+ 227              		.syntax unified
+ 228              		.thumb
+ 229              		.thumb_func
+ 230              		.fpu softvfp
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 11
+
+
+ 232              	parserPacket:
+ 233              	.LVL18:
+ 234              	.LFB72:
+ 114:Core/MyLib/Src/sx127x.c ****     uint8_t lengh_packet = 0;
+ 235              		.loc 1 114 79 is_stmt 1 view -0
+ 236              		.cfi_startproc
+ 237              		@ args = 0, pretend = 0, frame = 0
+ 238              		@ frame_needed = 0, uses_anonymous_args = 0
+ 114:Core/MyLib/Src/sx127x.c ****     uint8_t lengh_packet = 0;
+ 239              		.loc 1 114 79 is_stmt 0 view .LVU40
+ 240 0000 08B5     		push	{r3, lr}
+ 241              	.LCFI10:
+ 242              		.cfi_def_cfa_offset 8
+ 243              		.cfi_offset 3, -8
+ 244              		.cfi_offset 14, -4
+ 115:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_IRQ_FLAGS, &modem->IrqStatus, 1);
+ 245              		.loc 1 115 5 is_stmt 1 view .LVU41
+ 246              	.LVL19:
+ 116:Core/MyLib/Src/sx127x.c **** 
+ 247              		.loc 1 116 5 view .LVU42
+ 248 0002 0123     		movs	r3, #1
+ 249 0004 01F11802 		add	r2, r1, #24
+ 250              	.LVL20:
+ 116:Core/MyLib/Src/sx127x.c **** 
+ 251              		.loc 1 116 5 is_stmt 0 view .LVU43
+ 252 0008 1221     		movs	r1, #18
+ 253              	.LVL21:
+ 116:Core/MyLib/Src/sx127x.c **** 
+ 254              		.loc 1 116 5 view .LVU44
+ 255 000a FFF7FEFF 		bl	readReg
+ 256              	.LVL22:
+ 118:Core/MyLib/Src/sx127x.c **** 
+ 257              		.loc 1 118 1 view .LVU45
+ 258 000e 08BD     		pop	{r3, pc}
+ 259              		.cfi_endproc
+ 260              	.LFE72:
+ 262              		.section	.text.writeReg,"ax",%progbits
+ 263              		.align	1
+ 264              		.global	writeReg
+ 265              		.syntax unified
+ 266              		.thumb
+ 267              		.thumb_func
+ 268              		.fpu softvfp
+ 270              	writeReg:
+ 271              	.LVL23:
+ 272              	.LFB90:
+ 323:Core/MyLib/Src/sx127x.c **** 
+ 324:Core/MyLib/Src/sx127x.c **** void writeReg(SPI_HandleTypeDef* hspi, uint8_t address, uint8_t* pData, uint8_t len){
+ 273              		.loc 1 324 85 is_stmt 1 view -0
+ 274              		.cfi_startproc
+ 275              		@ args = 0, pretend = 0, frame = 8
+ 276              		@ frame_needed = 0, uses_anonymous_args = 0
+ 277              		.loc 1 324 85 is_stmt 0 view .LVU47
+ 278 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 279              	.LCFI11:
+ 280              		.cfi_def_cfa_offset 20
+ 281              		.cfi_offset 4, -20
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 12
+
+
+ 282              		.cfi_offset 5, -16
+ 283              		.cfi_offset 6, -12
+ 284              		.cfi_offset 7, -8
+ 285              		.cfi_offset 14, -4
+ 286 0002 83B0     		sub	sp, sp, #12
+ 287              	.LCFI12:
+ 288              		.cfi_def_cfa_offset 32
+ 289 0004 0446     		mov	r4, r0
+ 290 0006 1546     		mov	r5, r2
+ 291 0008 1E46     		mov	r6, r3
+ 292 000a 8DF80710 		strb	r1, [sp, #7]
+ 325:Core/MyLib/Src/sx127x.c ****     uint32_t Timeout = 2;
+ 293              		.loc 1 325 5 is_stmt 1 view .LVU48
+ 294              	.LVL24:
+ 326:Core/MyLib/Src/sx127x.c ****     address |= 0x80;
+ 295              		.loc 1 326 5 view .LVU49
+ 296              		.loc 1 326 13 is_stmt 0 view .LVU50
+ 297 000e CBB2     		uxtb	r3, r1
+ 298              	.LVL25:
+ 299              		.loc 1 326 13 view .LVU51
+ 300 0010 63F07F03 		orn	r3, r3, #127
+ 301 0014 8DF80730 		strb	r3, [sp, #7]
+ 327:Core/MyLib/Src/sx127x.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+ 302              		.loc 1 327 5 is_stmt 1 view .LVU52
+ 303 0018 0C4F     		ldr	r7, .L15
+ 304 001a 0022     		movs	r2, #0
+ 305              	.LVL26:
+ 306              		.loc 1 327 5 is_stmt 0 view .LVU53
+ 307 001c 0821     		movs	r1, #8
+ 308              	.LVL27:
+ 309              		.loc 1 327 5 view .LVU54
+ 310 001e 3846     		mov	r0, r7
+ 311              	.LVL28:
+ 312              		.loc 1 327 5 view .LVU55
+ 313 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 314              	.LVL29:
+ 328:Core/MyLib/Src/sx127x.c ****     HAL_SPI_Transmit(hspi, &address, 1, Timeout);
+ 315              		.loc 1 328 5 is_stmt 1 view .LVU56
+ 316 0024 0223     		movs	r3, #2
+ 317 0026 0122     		movs	r2, #1
+ 318 0028 0DF10701 		add	r1, sp, #7
+ 319 002c 2046     		mov	r0, r4
+ 320 002e FFF7FEFF 		bl	HAL_SPI_Transmit
+ 321              	.LVL30:
+ 329:Core/MyLib/Src/sx127x.c ****     HAL_SPI_Transmit(hspi, pData, len, Timeout);
+ 322              		.loc 1 329 5 view .LVU57
+ 323 0032 0223     		movs	r3, #2
+ 324 0034 3246     		mov	r2, r6
+ 325 0036 2946     		mov	r1, r5
+ 326 0038 2046     		mov	r0, r4
+ 327 003a FFF7FEFF 		bl	HAL_SPI_Transmit
+ 328              	.LVL31:
+ 330:Core/MyLib/Src/sx127x.c ****     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
+ 329              		.loc 1 330 5 view .LVU58
+ 330 003e 0122     		movs	r2, #1
+ 331 0040 0821     		movs	r1, #8
+ 332 0042 3846     		mov	r0, r7
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 13
+
+
+ 333 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 334              	.LVL32:
+ 331:Core/MyLib/Src/sx127x.c **** }
+ 335              		.loc 1 331 1 is_stmt 0 view .LVU59
+ 336 0048 03B0     		add	sp, sp, #12
+ 337              	.LCFI13:
+ 338              		.cfi_def_cfa_offset 20
+ 339              		@ sp needed
+ 340 004a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 341              	.LVL33:
+ 342              	.L16:
+ 343              		.loc 1 331 1 view .LVU60
+ 344              		.align	2
+ 345              	.L15:
+ 346 004c 00080140 		.word	1073809408
+ 347              		.cfi_endproc
+ 348              	.LFE90:
+ 350              		.section	.text.setLoRaMode,"ax",%progbits
+ 351              		.align	1
+ 352              		.global	setLoRaMode
+ 353              		.syntax unified
+ 354              		.thumb
+ 355              		.thumb_func
+ 356              		.fpu softvfp
+ 358              	setLoRaMode:
+ 359              	.LVL34:
+ 360              	.LFB68:
+  76:Core/MyLib/Src/sx127x.c ****     uint8_t    data;
+ 361              		.loc 1 76 42 is_stmt 1 view -0
+ 362              		.cfi_startproc
+ 363              		@ args = 0, pretend = 0, frame = 8
+ 364              		@ frame_needed = 0, uses_anonymous_args = 0
+  76:Core/MyLib/Src/sx127x.c ****     uint8_t    data;
+ 365              		.loc 1 76 42 is_stmt 0 view .LVU62
+ 366 0000 10B5     		push	{r4, lr}
+ 367              	.LCFI14:
+ 368              		.cfi_def_cfa_offset 8
+ 369              		.cfi_offset 4, -8
+ 370              		.cfi_offset 14, -4
+ 371 0002 82B0     		sub	sp, sp, #8
+ 372              	.LCFI15:
+ 373              		.cfi_def_cfa_offset 16
+ 374 0004 0446     		mov	r4, r0
+  77:Core/MyLib/Src/sx127x.c **** 	uint8_t    read;
+ 375              		.loc 1 77 5 is_stmt 1 view .LVU63
+  78:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_OP_MODE, &read, 1);
+ 376              		.loc 1 78 2 view .LVU64
+  79:Core/MyLib/Src/sx127x.c **** 	data = read | 0x80;
+ 377              		.loc 1 79 5 view .LVU65
+ 378 0006 0123     		movs	r3, #1
+ 379 0008 0DF10602 		add	r2, sp, #6
+ 380 000c 1946     		mov	r1, r3
+ 381 000e FFF7FEFF 		bl	readReg
+ 382              	.LVL35:
+  80:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 383              		.loc 1 80 2 view .LVU66
+  80:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 14
+
+
+ 384              		.loc 1 80 7 is_stmt 0 view .LVU67
+ 385 0012 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 386 0016 63F07F03 		orn	r3, r3, #127
+ 387 001a 8DF80730 		strb	r3, [sp, #7]
+  81:Core/MyLib/Src/sx127x.c **** }
+ 388              		.loc 1 81 2 is_stmt 1 view .LVU68
+ 389 001e 0123     		movs	r3, #1
+ 390 0020 0DF10702 		add	r2, sp, #7
+ 391 0024 1946     		mov	r1, r3
+ 392 0026 2046     		mov	r0, r4
+ 393 0028 FFF7FEFF 		bl	writeReg
+ 394              	.LVL36:
+  82:Core/MyLib/Src/sx127x.c **** 
+ 395              		.loc 1 82 1 is_stmt 0 view .LVU69
+ 396 002c 02B0     		add	sp, sp, #8
+ 397              	.LCFI16:
+ 398              		.cfi_def_cfa_offset 8
+ 399              		@ sp needed
+ 400 002e 10BD     		pop	{r4, pc}
+  82:Core/MyLib/Src/sx127x.c **** 
+ 401              		.loc 1 82 1 view .LVU70
+ 402              		.cfi_endproc
+ 403              	.LFE68:
+ 405              		.section	.text.gotoMode,"ax",%progbits
+ 406              		.align	1
+ 407              		.global	gotoMode
+ 408              		.syntax unified
+ 409              		.thumb
+ 410              		.thumb_func
+ 411              		.fpu softvfp
+ 413              	gotoMode:
+ 414              	.LVL37:
+ 415              	.LFB69:
+  84:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 416              		.loc 1 84 53 is_stmt 1 view -0
+ 417              		.cfi_startproc
+ 418              		@ args = 0, pretend = 0, frame = 8
+ 419              		@ frame_needed = 0, uses_anonymous_args = 0
+  84:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 420              		.loc 1 84 53 is_stmt 0 view .LVU72
+ 421 0000 30B5     		push	{r4, r5, lr}
+ 422              	.LCFI17:
+ 423              		.cfi_def_cfa_offset 12
+ 424              		.cfi_offset 4, -12
+ 425              		.cfi_offset 5, -8
+ 426              		.cfi_offset 14, -4
+ 427 0002 83B0     		sub	sp, sp, #12
+ 428              	.LCFI18:
+ 429              		.cfi_def_cfa_offset 24
+ 430 0004 0446     		mov	r4, r0
+ 431 0006 0D46     		mov	r5, r1
+  85:Core/MyLib/Src/sx127x.c **** 	uint8_t data;
+ 432              		.loc 1 85 5 is_stmt 1 view .LVU73
+  86:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_OP_MODE, &read, 1);
+ 433              		.loc 1 86 2 view .LVU74
+  87:Core/MyLib/Src/sx127x.c **** 	data = read;
+ 434              		.loc 1 87 5 view .LVU75
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 15
+
+
+ 435 0008 0123     		movs	r3, #1
+ 436 000a 0DF10702 		add	r2, sp, #7
+ 437 000e 1946     		mov	r1, r3
+ 438              	.LVL38:
+  87:Core/MyLib/Src/sx127x.c **** 	data = read;
+ 439              		.loc 1 87 5 is_stmt 0 view .LVU76
+ 440 0010 FFF7FEFF 		bl	readReg
+ 441              	.LVL39:
+  88:Core/MyLib/Src/sx127x.c **** 
+ 442              		.loc 1 88 2 is_stmt 1 view .LVU77
+  88:Core/MyLib/Src/sx127x.c **** 
+ 443              		.loc 1 88 7 is_stmt 0 view .LVU78
+ 444 0014 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 445 0018 8DF80630 		strb	r3, [sp, #6]
+  90:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x00;
+ 446              		.loc 1 90 2 is_stmt 1 view .LVU79
+  90:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x00;
+ 447              		.loc 1 90 4 is_stmt 0 view .LVU80
+ 448 001c 65B9     		cbnz	r5, .L20
+  91:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_STDBY){
+ 449              		.loc 1 91 3 is_stmt 1 view .LVU81
+  91:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_STDBY){
+ 450              		.loc 1 91 24 is_stmt 0 view .LVU82
+ 451 001e 03F0F803 		and	r3, r3, #248
+  91:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_STDBY){
+ 452              		.loc 1 91 8 view .LVU83
+ 453 0022 8DF80630 		strb	r3, [sp, #6]
+ 454              	.L21:
+ 101:Core/MyLib/Src/sx127x.c **** }
+ 455              		.loc 1 101 2 is_stmt 1 view .LVU84
+ 456 0026 0123     		movs	r3, #1
+ 457 0028 0DF10602 		add	r2, sp, #6
+ 458 002c 1946     		mov	r1, r3
+ 459 002e 2046     		mov	r0, r4
+ 460 0030 FFF7FEFF 		bl	writeReg
+ 461              	.LVL40:
+ 102:Core/MyLib/Src/sx127x.c **** 
+ 462              		.loc 1 102 1 is_stmt 0 view .LVU85
+ 463 0034 03B0     		add	sp, sp, #12
+ 464              	.LCFI19:
+ 465              		.cfi_remember_state
+ 466              		.cfi_def_cfa_offset 12
+ 467              		@ sp needed
+ 468 0036 30BD     		pop	{r4, r5, pc}
+ 469              	.LVL41:
+ 470              	.L20:
+ 471              	.LCFI20:
+ 472              		.cfi_restore_state
+  92:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x01;
+ 473              		.loc 1 92 8 is_stmt 1 view .LVU86
+  92:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x01;
+ 474              		.loc 1 92 11 is_stmt 0 view .LVU87
+ 475 0038 012D     		cmp	r5, #1
+ 476 003a 0DD0     		beq	.L26
+  94:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x03;
+ 477              		.loc 1 94 8 is_stmt 1 view .LVU88
+  94:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x03;
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 16
+
+
+ 478              		.loc 1 94 11 is_stmt 0 view .LVU89
+ 479 003c 032D     		cmp	r5, #3
+ 480 003e 13D0     		beq	.L27
+  96:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x05;
+ 481              		.loc 1 96 8 is_stmt 1 view .LVU90
+  96:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x05;
+ 482              		.loc 1 96 11 is_stmt 0 view .LVU91
+ 483 0040 052D     		cmp	r5, #5
+ 484 0042 19D0     		beq	.L28
+  98:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x06;
+ 485              		.loc 1 98 8 is_stmt 1 view .LVU92
+  98:Core/MyLib/Src/sx127x.c **** 		data = (read & 0xF8) | 0x06;
+ 486              		.loc 1 98 11 is_stmt 0 view .LVU93
+ 487 0044 062D     		cmp	r5, #6
+ 488 0046 EED1     		bne	.L21
+  99:Core/MyLib/Src/sx127x.c **** 	}
+ 489              		.loc 1 99 3 is_stmt 1 view .LVU94
+  99:Core/MyLib/Src/sx127x.c **** 	}
+ 490              		.loc 1 99 16 is_stmt 0 view .LVU95
+ 491 0048 23F00703 		bic	r3, r3, #7
+ 492 004c 5BB2     		sxtb	r3, r3
+  99:Core/MyLib/Src/sx127x.c **** 	}
+ 493              		.loc 1 99 24 view .LVU96
+ 494 004e 43F00603 		orr	r3, r3, #6
+  99:Core/MyLib/Src/sx127x.c **** 	}
+ 495              		.loc 1 99 8 view .LVU97
+ 496 0052 8DF80630 		strb	r3, [sp, #6]
+ 497 0056 E6E7     		b	.L21
+ 498              	.L26:
+  93:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_TX){
+ 499              		.loc 1 93 3 is_stmt 1 view .LVU98
+  93:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_TX){
+ 500              		.loc 1 93 16 is_stmt 0 view .LVU99
+ 501 0058 23F00703 		bic	r3, r3, #7
+ 502 005c 5BB2     		sxtb	r3, r3
+  93:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_TX){
+ 503              		.loc 1 93 24 view .LVU100
+ 504 005e 43F00103 		orr	r3, r3, #1
+  93:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_TX){
+ 505              		.loc 1 93 8 view .LVU101
+ 506 0062 8DF80630 		strb	r3, [sp, #6]
+ 507 0066 DEE7     		b	.L21
+ 508              	.L27:
+  95:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_CONTINUOUS){
+ 509              		.loc 1 95 3 is_stmt 1 view .LVU102
+  95:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_CONTINUOUS){
+ 510              		.loc 1 95 16 is_stmt 0 view .LVU103
+ 511 0068 23F00703 		bic	r3, r3, #7
+ 512 006c 5BB2     		sxtb	r3, r3
+  95:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_CONTINUOUS){
+ 513              		.loc 1 95 24 view .LVU104
+ 514 006e 43F00303 		orr	r3, r3, #3
+  95:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_CONTINUOUS){
+ 515              		.loc 1 95 8 view .LVU105
+ 516 0072 8DF80630 		strb	r3, [sp, #6]
+ 517 0076 D6E7     		b	.L21
+ 518              	.L28:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 17
+
+
+  97:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_SINGLE){
+ 519              		.loc 1 97 3 is_stmt 1 view .LVU106
+  97:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_SINGLE){
+ 520              		.loc 1 97 16 is_stmt 0 view .LVU107
+ 521 0078 23F00703 		bic	r3, r3, #7
+ 522 007c 5BB2     		sxtb	r3, r3
+  97:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_SINGLE){
+ 523              		.loc 1 97 24 view .LVU108
+ 524 007e 43F00503 		orr	r3, r3, #5
+  97:Core/MyLib/Src/sx127x.c **** 	}else if (mode == SX127X_MODE_RX_SINGLE){
+ 525              		.loc 1 97 8 view .LVU109
+ 526 0082 8DF80630 		strb	r3, [sp, #6]
+ 527 0086 CEE7     		b	.L21
+ 528              		.cfi_endproc
+ 529              	.LFE69:
+ 531              		.section	.text.sx127x_Transmit,"ax",%progbits
+ 532              		.align	1
+ 533              		.global	sx127x_Transmit
+ 534              		.syntax unified
+ 535              		.thumb
+ 536              		.thumb_func
+ 537              		.fpu softvfp
+ 539              	sx127x_Transmit:
+ 540              	.LVL42:
+ 541              	.LFB66:
+  36:Core/MyLib/Src/sx127x.c ****     uint8_t irq = 0xFF;
+ 542              		.loc 1 36 96 is_stmt 1 view -0
+ 543              		.cfi_startproc
+ 544              		@ args = 0, pretend = 0, frame = 16
+ 545              		@ frame_needed = 0, uses_anonymous_args = 0
+  36:Core/MyLib/Src/sx127x.c ****     uint8_t irq = 0xFF;
+ 546              		.loc 1 36 96 is_stmt 0 view .LVU111
+ 547 0000 70B5     		push	{r4, r5, r6, lr}
+ 548              	.LCFI21:
+ 549              		.cfi_def_cfa_offset 16
+ 550              		.cfi_offset 4, -16
+ 551              		.cfi_offset 5, -12
+ 552              		.cfi_offset 6, -8
+ 553              		.cfi_offset 14, -4
+ 554 0002 84B0     		sub	sp, sp, #16
+ 555              	.LCFI22:
+ 556              		.cfi_def_cfa_offset 32
+ 557 0004 0646     		mov	r6, r0
+ 558 0006 0C46     		mov	r4, r1
+ 559 0008 0192     		str	r2, [sp, #4]
+ 560 000a 8DF80330 		strb	r3, [sp, #3]
+  37:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 561              		.loc 1 37 5 is_stmt 1 view .LVU112
+  37:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 562              		.loc 1 37 13 is_stmt 0 view .LVU113
+ 563 000e FF23     		movs	r3, #255
+ 564              	.LVL43:
+  37:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 565              		.loc 1 37 13 view .LVU114
+ 566 0010 8DF80F30 		strb	r3, [sp, #15]
+  38:Core/MyLib/Src/sx127x.c ****     int timeout = 500;
+ 567              		.loc 1 38 5 is_stmt 1 view .LVU115
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 18
+
+
+  39:Core/MyLib/Src/sx127x.c **** 
+ 568              		.loc 1 39 5 view .LVU116
+ 569              	.LVL44:
+  41:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_FIFO_TX_BASE_ADDR, &read, 1);
+ 570              		.loc 1 41 5 view .LVU117
+ 571 0014 0121     		movs	r1, #1
+ 572              	.LVL45:
+  41:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_FIFO_TX_BASE_ADDR, &read, 1);
+ 573              		.loc 1 41 5 is_stmt 0 view .LVU118
+ 574 0016 FFF7FEFF 		bl	gotoMode
+ 575              	.LVL46:
+  42:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO_ADDR_PTR, &read, 1);
+ 576              		.loc 1 42 5 is_stmt 1 view .LVU119
+ 577 001a 0123     		movs	r3, #1
+ 578 001c 0DF10E02 		add	r2, sp, #14
+ 579 0020 0E21     		movs	r1, #14
+ 580 0022 3046     		mov	r0, r6
+ 581 0024 FFF7FEFF 		bl	readReg
+ 582              	.LVL47:
+  43:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PAYLOAD_LENGTH, &len, 1);
+ 583              		.loc 1 43 5 view .LVU120
+ 584 0028 0123     		movs	r3, #1
+ 585 002a 0DF10E02 		add	r2, sp, #14
+ 586 002e 0D21     		movs	r1, #13
+ 587 0030 3046     		mov	r0, r6
+ 588 0032 FFF7FEFF 		bl	writeReg
+ 589              	.LVL48:
+  44:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO, &data, len);
+ 590              		.loc 1 44 5 view .LVU121
+ 591 0036 0123     		movs	r3, #1
+ 592 0038 0DF10302 		add	r2, sp, #3
+ 593 003c 2221     		movs	r1, #34
+ 594 003e 3046     		mov	r0, r6
+ 595 0040 FFF7FEFF 		bl	writeReg
+ 596              	.LVL49:
+  45:Core/MyLib/Src/sx127x.c ****     gotoMode(hspi, SX127X_MODE_TX);
+ 597              		.loc 1 45 5 view .LVU122
+ 598 0044 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 599 0048 01AA     		add	r2, sp, #4
+ 600 004a 0021     		movs	r1, #0
+ 601 004c 3046     		mov	r0, r6
+ 602 004e FFF7FEFF 		bl	writeReg
+ 603              	.LVL50:
+  46:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO, &modem->bufferIndex, 1);
+ 604              		.loc 1 46 5 view .LVU123
+ 605 0052 0321     		movs	r1, #3
+ 606 0054 3046     		mov	r0, r6
+ 607 0056 FFF7FEFF 		bl	gotoMode
+ 608              	.LVL51:
+  47:Core/MyLib/Src/sx127x.c ****     while(1){
+ 609              		.loc 1 47 5 view .LVU124
+ 610 005a 0123     		movs	r3, #1
+ 611 005c 04F11902 		add	r2, r4, #25
+ 612 0060 0021     		movs	r1, #0
+ 613 0062 3046     		mov	r0, r6
+ 614 0064 FFF7FEFF 		bl	writeReg
+ 615              	.LVL52:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 19
+
+
+  39:Core/MyLib/Src/sx127x.c **** 
+ 616              		.loc 1 39 9 is_stmt 0 view .LVU125
+ 617 0068 4FF4FA75 		mov	r5, #500
+ 618              	.LVL53:
+ 619              	.L32:
+  48:Core/MyLib/Src/sx127x.c **** 		readReg(hspi, SX127X_REG_IRQ_FLAGS, &read, 1);
+ 620              		.loc 1 48 5 is_stmt 1 view .LVU126
+  49:Core/MyLib/Src/sx127x.c **** 		if((read & 0x08)!=0){
+ 621              		.loc 1 49 3 view .LVU127
+ 622 006c 0123     		movs	r3, #1
+ 623 006e 0DF10E02 		add	r2, sp, #14
+ 624 0072 1221     		movs	r1, #18
+ 625 0074 3046     		mov	r0, r6
+ 626 0076 FFF7FEFF 		bl	readReg
+ 627              	.LVL54:
+  50:Core/MyLib/Src/sx127x.c **** 			writeReg(hspi, SX127X_REG_IRQ_FLAGS, &irq, 1);
+ 628              		.loc 1 50 3 view .LVU128
+  50:Core/MyLib/Src/sx127x.c **** 			writeReg(hspi, SX127X_REG_IRQ_FLAGS, &irq, 1);
+ 629              		.loc 1 50 12 is_stmt 0 view .LVU129
+ 630 007a 9DF80E30 		ldrb	r3, [sp, #14]	@ zero_extendqisi2
+  50:Core/MyLib/Src/sx127x.c **** 			writeReg(hspi, SX127X_REG_IRQ_FLAGS, &irq, 1);
+ 631              		.loc 1 50 5 view .LVU130
+ 632 007e 13F00804 		ands	r4, r3, #8
+ 633 0082 06D1     		bne	.L34
+  56:Core/MyLib/Src/sx127x.c **** 				gotoMode(hspi, SX127X_MODE_STDBY);
+ 634              		.loc 1 56 4 is_stmt 1 view .LVU131
+ 635              	.LVL55:
+  56:Core/MyLib/Src/sx127x.c **** 				gotoMode(hspi, SX127X_MODE_STDBY);
+ 636              		.loc 1 56 6 is_stmt 0 view .LVU132
+ 637 0084 013D     		subs	r5, r5, #1
+ 638              	.LVL56:
+  56:Core/MyLib/Src/sx127x.c **** 				gotoMode(hspi, SX127X_MODE_STDBY);
+ 639              		.loc 1 56 6 view .LVU133
+ 640 0086 F1D1     		bne	.L32
+  57:Core/MyLib/Src/sx127x.c **** 				return 0;
+ 641              		.loc 1 57 5 is_stmt 1 view .LVU134
+ 642 0088 0121     		movs	r1, #1
+ 643 008a 3046     		mov	r0, r6
+ 644 008c FFF7FEFF 		bl	gotoMode
+ 645              	.LVL57:
+  58:Core/MyLib/Src/sx127x.c **** 			}
+ 646              		.loc 1 58 5 view .LVU135
+  58:Core/MyLib/Src/sx127x.c **** 			}
+ 647              		.loc 1 58 12 is_stmt 0 view .LVU136
+ 648 0090 0BE0     		b	.L31
+ 649              	.L34:
+  51:Core/MyLib/Src/sx127x.c **** 			gotoMode(hspi, SX127X_MODE_STDBY);
+ 650              		.loc 1 51 4 is_stmt 1 view .LVU137
+ 651 0092 0123     		movs	r3, #1
+ 652 0094 0DF10F02 		add	r2, sp, #15
+ 653 0098 1221     		movs	r1, #18
+ 654 009a 3046     		mov	r0, r6
+ 655 009c FFF7FEFF 		bl	writeReg
+ 656              	.LVL58:
+  52:Core/MyLib/Src/sx127x.c **** 			return 1;
+ 657              		.loc 1 52 4 view .LVU138
+ 658 00a0 0121     		movs	r1, #1
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 20
+
+
+ 659 00a2 3046     		mov	r0, r6
+ 660 00a4 FFF7FEFF 		bl	gotoMode
+ 661              	.LVL59:
+  53:Core/MyLib/Src/sx127x.c **** 		}
+ 662              		.loc 1 53 4 view .LVU139
+  53:Core/MyLib/Src/sx127x.c **** 		}
+ 663              		.loc 1 53 11 is_stmt 0 view .LVU140
+ 664 00a8 0124     		movs	r4, #1
+ 665              	.L31:
+  64:Core/MyLib/Src/sx127x.c **** 
+ 666              		.loc 1 64 1 view .LVU141
+ 667 00aa 2046     		mov	r0, r4
+ 668 00ac 04B0     		add	sp, sp, #16
+ 669              	.LCFI23:
+ 670              		.cfi_def_cfa_offset 16
+ 671              		@ sp needed
+ 672 00ae 70BD     		pop	{r4, r5, r6, pc}
+  64:Core/MyLib/Src/sx127x.c **** 
+ 673              		.loc 1 64 1 view .LVU142
+ 674              		.cfi_endproc
+ 675              	.LFE66:
+ 677              		.section	.text.setAGC,"ax",%progbits
+ 678              		.align	1
+ 679              		.global	setAGC
+ 680              		.syntax unified
+ 681              		.thumb
+ 682              		.thumb_func
+ 683              		.fpu softvfp
+ 685              	setAGC:
+ 686              	.LVL60:
+ 687              	.LFB70:
+ 104:Core/MyLib/Src/sx127x.c ****     uint8_t AGC = 0x04;
+ 688              		.loc 1 104 37 is_stmt 1 view -0
+ 689              		.cfi_startproc
+ 690              		@ args = 0, pretend = 0, frame = 8
+ 691              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104:Core/MyLib/Src/sx127x.c ****     uint8_t AGC = 0x04;
+ 692              		.loc 1 104 37 is_stmt 0 view .LVU144
+ 693 0000 00B5     		push	{lr}
+ 694              	.LCFI24:
+ 695              		.cfi_def_cfa_offset 4
+ 696              		.cfi_offset 14, -4
+ 697 0002 83B0     		sub	sp, sp, #12
+ 698              	.LCFI25:
+ 699              		.cfi_def_cfa_offset 16
+ 105:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_3, &AGC, 1);
+ 700              		.loc 1 105 5 is_stmt 1 view .LVU145
+ 105:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_3, &AGC, 1);
+ 701              		.loc 1 105 13 is_stmt 0 view .LVU146
+ 702 0004 0423     		movs	r3, #4
+ 703 0006 8DF80730 		strb	r3, [sp, #7]
+ 106:Core/MyLib/Src/sx127x.c **** }
+ 704              		.loc 1 106 5 is_stmt 1 view .LVU147
+ 705 000a 0123     		movs	r3, #1
+ 706 000c 0DF10702 		add	r2, sp, #7
+ 707 0010 2621     		movs	r1, #38
+ 708 0012 FFF7FEFF 		bl	writeReg
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 21
+
+
+ 709              	.LVL61:
+ 107:Core/MyLib/Src/sx127x.c **** uint8_t available(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+ 710              		.loc 1 107 1 is_stmt 0 view .LVU148
+ 711 0016 03B0     		add	sp, sp, #12
+ 712              	.LCFI26:
+ 713              		.cfi_def_cfa_offset 4
+ 714              		@ sp needed
+ 715 0018 5DF804FB 		ldr	pc, [sp], #4
+ 716              		.cfi_endproc
+ 717              	.LFE70:
+ 719              		.section	.text.setSyncWord,"ax",%progbits
+ 720              		.align	1
+ 721              		.global	setSyncWord
+ 722              		.syntax unified
+ 723              		.thumb
+ 724              		.thumb_func
+ 725              		.fpu softvfp
+ 727              	setSyncWord:
+ 728              	.LVL62:
+ 729              	.LFB73:
+ 121:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_SYNC_WORD, &modem->SyncWord, 1);
+ 730              		.loc 1 121 61 is_stmt 1 view -0
+ 731              		.cfi_startproc
+ 732              		@ args = 0, pretend = 0, frame = 0
+ 733              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_SYNC_WORD, &modem->SyncWord, 1);
+ 734              		.loc 1 121 61 is_stmt 0 view .LVU150
+ 735 0000 08B5     		push	{r3, lr}
+ 736              	.LCFI27:
+ 737              		.cfi_def_cfa_offset 8
+ 738              		.cfi_offset 3, -8
+ 739              		.cfi_offset 14, -4
+ 122:Core/MyLib/Src/sx127x.c **** }
+ 740              		.loc 1 122 5 is_stmt 1 view .LVU151
+ 741 0002 0123     		movs	r3, #1
+ 742 0004 01F11002 		add	r2, r1, #16
+ 743 0008 3921     		movs	r1, #57
+ 744              	.LVL63:
+ 122:Core/MyLib/Src/sx127x.c **** }
+ 745              		.loc 1 122 5 is_stmt 0 view .LVU152
+ 746 000a FFF7FEFF 		bl	writeReg
+ 747              	.LVL64:
+ 123:Core/MyLib/Src/sx127x.c **** 
+ 748              		.loc 1 123 1 view .LVU153
+ 749 000e 08BD     		pop	{r3, pc}
+ 750              		.cfi_endproc
+ 751              	.LFE73:
+ 753              		.section	.text.LoRa_begin,"ax",%progbits
+ 754              		.align	1
+ 755              		.global	LoRa_begin
+ 756              		.syntax unified
+ 757              		.thumb
+ 758              		.thumb_func
+ 759              		.fpu softvfp
+ 761              	LoRa_begin:
+ 762              	.LVL65:
+ 763              	.LFB74:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 22
+
+
+ 125:Core/MyLib/Src/sx127x.c ****     uint8_t version = 0x00;
+ 764              		.loc 1 125 41 is_stmt 1 view -0
+ 765              		.cfi_startproc
+ 766              		@ args = 0, pretend = 0, frame = 8
+ 767              		@ frame_needed = 0, uses_anonymous_args = 0
+ 125:Core/MyLib/Src/sx127x.c ****     uint8_t version = 0x00;
+ 768              		.loc 1 125 41 is_stmt 0 view .LVU155
+ 769 0000 10B5     		push	{r4, lr}
+ 770              	.LCFI28:
+ 771              		.cfi_def_cfa_offset 8
+ 772              		.cfi_offset 4, -8
+ 773              		.cfi_offset 14, -4
+ 774 0002 82B0     		sub	sp, sp, #8
+ 775              	.LCFI29:
+ 776              		.cfi_def_cfa_offset 16
+ 777 0004 0446     		mov	r4, r0
+ 126:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 778              		.loc 1 126 5 is_stmt 1 view .LVU156
+ 779              	.LVL66:
+ 127:Core/MyLib/Src/sx127x.c ****     // while (version != 0x12 && version != 0x22) {
+ 780              		.loc 1 127 5 view .LVU157
+ 132:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 781              		.loc 1 132 5 view .LVU158
+ 132:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 782              		.loc 1 132 13 is_stmt 0 view .LVU159
+ 783 0006 8023     		movs	r3, #128
+ 784 0008 8DF80730 		strb	r3, [sp, #7]
+ 133:Core/MyLib/Src/sx127x.c ****     data |= SX127X_MODE_STDBY;
+ 785              		.loc 1 133 5 is_stmt 1 view .LVU160
+ 786 000c 0123     		movs	r3, #1
+ 787 000e 0DF10702 		add	r2, sp, #7
+ 788 0012 1946     		mov	r1, r3
+ 789 0014 FFF7FEFF 		bl	writeReg
+ 790              	.LVL67:
+ 134:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 791              		.loc 1 134 5 view .LVU161
+ 134:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 792              		.loc 1 134 10 is_stmt 0 view .LVU162
+ 793 0018 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 794 001c 43F00103 		orr	r3, r3, #1
+ 795 0020 8DF80730 		strb	r3, [sp, #7]
+ 135:Core/MyLib/Src/sx127x.c **** }
+ 796              		.loc 1 135 5 is_stmt 1 view .LVU163
+ 797 0024 0123     		movs	r3, #1
+ 798 0026 0DF10702 		add	r2, sp, #7
+ 799 002a 1946     		mov	r1, r3
+ 800 002c 2046     		mov	r0, r4
+ 801 002e FFF7FEFF 		bl	writeReg
+ 802              	.LVL68:
+ 136:Core/MyLib/Src/sx127x.c **** 
+ 803              		.loc 1 136 1 is_stmt 0 view .LVU164
+ 804 0032 02B0     		add	sp, sp, #8
+ 805              	.LCFI30:
+ 806              		.cfi_def_cfa_offset 8
+ 807              		@ sp needed
+ 808 0034 10BD     		pop	{r4, pc}
+ 136:Core/MyLib/Src/sx127x.c **** 
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 23
+
+
+ 809              		.loc 1 136 1 view .LVU165
+ 810              		.cfi_endproc
+ 811              	.LFE74:
+ 813              		.section	.text.setBandwidth,"ax",%progbits
+ 814              		.align	1
+ 815              		.global	setBandwidth
+ 816              		.syntax unified
+ 817              		.thumb
+ 818              		.thumb_func
+ 819              		.fpu softvfp
+ 821              	setBandwidth:
+ 822              	.LVL69:
+ 823              	.LFB75:
+ 138:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &modem->BandWidth, 1);
+ 824              		.loc 1 138 62 is_stmt 1 view -0
+ 825              		.cfi_startproc
+ 826              		@ args = 0, pretend = 0, frame = 0
+ 827              		@ frame_needed = 0, uses_anonymous_args = 0
+ 138:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &modem->BandWidth, 1);
+ 828              		.loc 1 138 62 is_stmt 0 view .LVU167
+ 829 0000 08B5     		push	{r3, lr}
+ 830              	.LCFI31:
+ 831              		.cfi_def_cfa_offset 8
+ 832              		.cfi_offset 3, -8
+ 833              		.cfi_offset 14, -4
+ 139:Core/MyLib/Src/sx127x.c **** }
+ 834              		.loc 1 139 5 is_stmt 1 view .LVU168
+ 835 0002 0123     		movs	r3, #1
+ 836 0004 01F10D02 		add	r2, r1, #13
+ 837 0008 1D21     		movs	r1, #29
+ 838              	.LVL70:
+ 139:Core/MyLib/Src/sx127x.c **** }
+ 839              		.loc 1 139 5 is_stmt 0 view .LVU169
+ 840 000a FFF7FEFF 		bl	writeReg
+ 841              	.LVL71:
+ 140:Core/MyLib/Src/sx127x.c **** 
+ 842              		.loc 1 140 1 view .LVU170
+ 843 000e 08BD     		pop	{r3, pc}
+ 844              		.cfi_endproc
+ 845              	.LFE75:
+ 847              		.section	.text.setSleep,"ax",%progbits
+ 848              		.align	1
+ 849              		.global	setSleep
+ 850              		.syntax unified
+ 851              		.thumb
+ 852              		.thumb_func
+ 853              		.fpu softvfp
+ 855              	setSleep:
+ 856              	.LVL72:
+ 857              	.LFB76:
+ 142:Core/MyLib/Src/sx127x.c ****     uint8_t data = SX127X_LONG_RANGE_MODE | SX127X_MODE_SLEEP;
+ 858              		.loc 1 142 39 is_stmt 1 view -0
+ 859              		.cfi_startproc
+ 860              		@ args = 0, pretend = 0, frame = 8
+ 861              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142:Core/MyLib/Src/sx127x.c ****     uint8_t data = SX127X_LONG_RANGE_MODE | SX127X_MODE_SLEEP;
+ 862              		.loc 1 142 39 is_stmt 0 view .LVU172
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 24
+
+
+ 863 0000 00B5     		push	{lr}
+ 864              	.LCFI32:
+ 865              		.cfi_def_cfa_offset 4
+ 866              		.cfi_offset 14, -4
+ 867 0002 83B0     		sub	sp, sp, #12
+ 868              	.LCFI33:
+ 869              		.cfi_def_cfa_offset 16
+ 143:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 870              		.loc 1 143 5 is_stmt 1 view .LVU173
+ 143:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 871              		.loc 1 143 13 is_stmt 0 view .LVU174
+ 872 0004 8023     		movs	r3, #128
+ 873 0006 8DF80730 		strb	r3, [sp, #7]
+ 144:Core/MyLib/Src/sx127x.c **** }
+ 874              		.loc 1 144 5 is_stmt 1 view .LVU175
+ 875 000a 0123     		movs	r3, #1
+ 876 000c 0DF10702 		add	r2, sp, #7
+ 877 0010 1946     		mov	r1, r3
+ 878 0012 FFF7FEFF 		bl	writeReg
+ 879              	.LVL73:
+ 145:Core/MyLib/Src/sx127x.c **** 
+ 880              		.loc 1 145 1 is_stmt 0 view .LVU176
+ 881 0016 03B0     		add	sp, sp, #12
+ 882              	.LCFI34:
+ 883              		.cfi_def_cfa_offset 4
+ 884              		@ sp needed
+ 885 0018 5DF804FB 		ldr	pc, [sp], #4
+ 886              		.cfi_endproc
+ 887              	.LFE76:
+ 889              		.global	__aeabi_uldivmod
+ 890              		.section	.text.setFrequency,"ax",%progbits
+ 891              		.align	1
+ 892              		.global	setFrequency
+ 893              		.syntax unified
+ 894              		.thumb
+ 895              		.thumb_func
+ 896              		.fpu softvfp
+ 898              	setFrequency:
+ 899              	.LVL74:
+ 900              	.LFB78:
+ 157:Core/MyLib/Src/sx127x.c ****     uint8_t  data;
+ 901              		.loc 1 157 62 is_stmt 1 view -0
+ 902              		.cfi_startproc
+ 903              		@ args = 0, pretend = 0, frame = 8
+ 904              		@ frame_needed = 0, uses_anonymous_args = 0
+ 157:Core/MyLib/Src/sx127x.c ****     uint8_t  data;
+ 905              		.loc 1 157 62 is_stmt 0 view .LVU178
+ 906 0000 30B5     		push	{r4, r5, lr}
+ 907              	.LCFI35:
+ 908              		.cfi_def_cfa_offset 12
+ 909              		.cfi_offset 4, -12
+ 910              		.cfi_offset 5, -8
+ 911              		.cfi_offset 14, -4
+ 912 0002 83B0     		sub	sp, sp, #12
+ 913              	.LCFI36:
+ 914              		.cfi_def_cfa_offset 24
+ 915 0004 0446     		mov	r4, r0
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 25
+
+
+ 158:Core/MyLib/Src/sx127x.c **** 	uint32_t F;
+ 916              		.loc 1 158 5 is_stmt 1 view .LVU179
+ 159:Core/MyLib/Src/sx127x.c **** 
+ 917              		.loc 1 159 2 view .LVU180
+ 161:Core/MyLib/Src/sx127x.c **** 
+ 918              		.loc 1 161 5 view .LVU181
+ 161:Core/MyLib/Src/sx127x.c **** 
+ 919              		.loc 1 161 26 is_stmt 0 view .LVU182
+ 920 0006 4968     		ldr	r1, [r1, #4]
+ 921              	.LVL75:
+ 161:Core/MyLib/Src/sx127x.c **** 
+ 922              		.loc 1 161 42 view .LVU183
+ 923 0008 134A     		ldr	r2, .L47
+ 924 000a 0023     		movs	r3, #0
+ 925 000c C804     		lsls	r0, r1, #19
+ 926              	.LVL76:
+ 161:Core/MyLib/Src/sx127x.c **** 
+ 927              		.loc 1 161 42 view .LVU184
+ 928 000e 490B     		lsrs	r1, r1, #13
+ 929 0010 FFF7FEFF 		bl	__aeabi_uldivmod
+ 930              	.LVL77:
+ 931 0014 0546     		mov	r5, r0
+ 932              	.LVL78:
+ 164:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MSB, &data, 1);
+ 933              		.loc 1 164 2 is_stmt 1 view .LVU185
+ 164:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MSB, &data, 1);
+ 934              		.loc 1 164 9 is_stmt 0 view .LVU186
+ 935 0016 C0F30743 		ubfx	r3, r0, #16, #8
+ 164:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MSB, &data, 1);
+ 936              		.loc 1 164 7 view .LVU187
+ 937 001a 8DF80730 		strb	r3, [sp, #7]
+ 165:Core/MyLib/Src/sx127x.c **** 
+ 938              		.loc 1 165 2 is_stmt 1 view .LVU188
+ 939 001e 0123     		movs	r3, #1
+ 940 0020 0DF10702 		add	r2, sp, #7
+ 941 0024 0621     		movs	r1, #6
+ 942 0026 2046     		mov	r0, r4
+ 943              	.LVL79:
+ 165:Core/MyLib/Src/sx127x.c **** 
+ 944              		.loc 1 165 2 is_stmt 0 view .LVU189
+ 945 0028 FFF7FEFF 		bl	writeReg
+ 946              	.LVL80:
+ 168:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MID, &data, 1);
+ 947              		.loc 1 168 2 is_stmt 1 view .LVU190
+ 168:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MID, &data, 1);
+ 948              		.loc 1 168 9 is_stmt 0 view .LVU191
+ 949 002c C5F30723 		ubfx	r3, r5, #8, #8
+ 168:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_MID, &data, 1);
+ 950              		.loc 1 168 7 view .LVU192
+ 951 0030 8DF80730 		strb	r3, [sp, #7]
+ 169:Core/MyLib/Src/sx127x.c **** 
+ 952              		.loc 1 169 2 is_stmt 1 view .LVU193
+ 953 0034 0123     		movs	r3, #1
+ 954 0036 0DF10702 		add	r2, sp, #7
+ 955 003a 0721     		movs	r1, #7
+ 956 003c 2046     		mov	r0, r4
+ 957 003e FFF7FEFF 		bl	writeReg
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 26
+
+
+ 958              	.LVL81:
+ 172:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_LSB, &data, 1);
+ 959              		.loc 1 172 2 view .LVU194
+ 172:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_FRF_LSB, &data, 1);
+ 960              		.loc 1 172 7 is_stmt 0 view .LVU195
+ 961 0042 8DF80750 		strb	r5, [sp, #7]
+ 173:Core/MyLib/Src/sx127x.c **** }
+ 962              		.loc 1 173 2 is_stmt 1 view .LVU196
+ 963 0046 0123     		movs	r3, #1
+ 964 0048 0DF10702 		add	r2, sp, #7
+ 965 004c 0821     		movs	r1, #8
+ 966 004e 2046     		mov	r0, r4
+ 967 0050 FFF7FEFF 		bl	writeReg
+ 968              	.LVL82:
+ 174:Core/MyLib/Src/sx127x.c **** 
+ 969              		.loc 1 174 1 is_stmt 0 view .LVU197
+ 970 0054 03B0     		add	sp, sp, #12
+ 971              	.LCFI37:
+ 972              		.cfi_def_cfa_offset 12
+ 973              		@ sp needed
+ 974 0056 30BD     		pop	{r4, r5, pc}
+ 975              	.LVL83:
+ 976              	.L48:
+ 174:Core/MyLib/Src/sx127x.c **** 
+ 977              		.loc 1 174 1 view .LVU198
+ 978              		.align	2
+ 979              	.L47:
+ 980 0058 0048E801 		.word	32000000
+ 981              		.cfi_endproc
+ 982              	.LFE78:
+ 984              		.section	.text.setPower,"ax",%progbits
+ 985              		.align	1
+ 986              		.global	setPower
+ 987              		.syntax unified
+ 988              		.thumb
+ 989              		.thumb_func
+ 990              		.fpu softvfp
+ 992              	setPower:
+ 993              	.LVL84:
+ 994              	.LFB79:
+ 176:Core/MyLib/Src/sx127x.c ****     // if(PA_OUTPUT_RFO_PIN == outputPin){
+ 995              		.loc 1 176 77 is_stmt 1 view -0
+ 996              		.cfi_startproc
+ 997              		@ args = 0, pretend = 0, frame = 0
+ 998              		@ frame_needed = 0, uses_anonymous_args = 0
+ 176:Core/MyLib/Src/sx127x.c ****     // if(PA_OUTPUT_RFO_PIN == outputPin){
+ 999              		.loc 1 176 77 is_stmt 0 view .LVU200
+ 1000 0000 08B5     		push	{r3, lr}
+ 1001              	.LCFI38:
+ 1002              		.cfi_def_cfa_offset 8
+ 1003              		.cfi_offset 3, -8
+ 1004              		.cfi_offset 14, -4
+ 210:Core/MyLib/Src/sx127x.c **** }
+ 1005              		.loc 1 210 5 is_stmt 1 view .LVU201
+ 1006 0002 0123     		movs	r3, #1
+ 1007 0004 01F10802 		add	r2, r1, #8
+ 1008              	.LVL85:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 27
+
+
+ 210:Core/MyLib/Src/sx127x.c **** }
+ 1009              		.loc 1 210 5 is_stmt 0 view .LVU202
+ 1010 0008 0921     		movs	r1, #9
+ 1011              	.LVL86:
+ 210:Core/MyLib/Src/sx127x.c **** }
+ 1012              		.loc 1 210 5 view .LVU203
+ 1013 000a FFF7FEFF 		bl	writeReg
+ 1014              	.LVL87:
+ 211:Core/MyLib/Src/sx127x.c **** 
+ 1015              		.loc 1 211 1 view .LVU204
+ 1016 000e 08BD     		pop	{r3, pc}
+ 1017              		.cfi_endproc
+ 1018              	.LFE79:
+ 1020              		.section	.text.setOCP,"ax",%progbits
+ 1021              		.align	1
+ 1022              		.global	setOCP
+ 1023              		.syntax unified
+ 1024              		.thumb
+ 1025              		.thumb_func
+ 1026              		.fpu softvfp
+ 1028              	setOCP:
+ 1029              	.LVL88:
+ 1030              	.LFB80:
+ 214:Core/MyLib/Src/sx127x.c ****     uint8_t	OcpTrim = 0;
+ 1031              		.loc 1 214 54 is_stmt 1 view -0
+ 1032              		.cfi_startproc
+ 1033              		@ args = 0, pretend = 0, frame = 8
+ 1034              		@ frame_needed = 0, uses_anonymous_args = 0
+ 214:Core/MyLib/Src/sx127x.c ****     uint8_t	OcpTrim = 0;
+ 1035              		.loc 1 214 54 is_stmt 0 view .LVU206
+ 1036 0000 00B5     		push	{lr}
+ 1037              	.LCFI39:
+ 1038              		.cfi_def_cfa_offset 4
+ 1039              		.cfi_offset 14, -4
+ 1040 0002 83B0     		sub	sp, sp, #12
+ 1041              	.LCFI40:
+ 1042              		.cfi_def_cfa_offset 16
+ 215:Core/MyLib/Src/sx127x.c **** 
+ 1043              		.loc 1 215 5 is_stmt 1 view .LVU207
+ 215:Core/MyLib/Src/sx127x.c **** 
+ 1044              		.loc 1 215 13 is_stmt 0 view .LVU208
+ 1045 0004 0023     		movs	r3, #0
+ 1046 0006 8DF80730 		strb	r3, [sp, #7]
+ 217:Core/MyLib/Src/sx127x.c **** 		current = 45;
+ 1047              		.loc 1 217 2 is_stmt 1 view .LVU209
+ 217:Core/MyLib/Src/sx127x.c **** 		current = 45;
+ 1048              		.loc 1 217 4 is_stmt 0 view .LVU210
+ 1049 000a 2C29     		cmp	r1, #44
+ 1050 000c 0ED9     		bls	.L55
+ 219:Core/MyLib/Src/sx127x.c **** 		current = 240;
+ 1051              		.loc 1 219 2 is_stmt 1 view .LVU211
+ 219:Core/MyLib/Src/sx127x.c **** 		current = 240;
+ 1052              		.loc 1 219 4 is_stmt 0 view .LVU212
+ 1053 000e F029     		cmp	r1, #240
+ 1054 0010 0DD9     		bls	.L52
+ 220:Core/MyLib/Src/sx127x.c **** 
+ 1055              		.loc 1 220 11 view .LVU213
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 28
+
+
+ 1056 0012 F021     		movs	r1, #240
+ 1057              	.LVL89:
+ 1058              	.L53:
+ 224:Core/MyLib/Src/sx127x.c **** 		OcpTrim = (current + 30)/10;
+ 1059              		.loc 1 224 7 is_stmt 1 view .LVU214
+ 224:Core/MyLib/Src/sx127x.c **** 		OcpTrim = (current + 30)/10;
+ 1060              		.loc 1 224 9 is_stmt 0 view .LVU215
+ 1061 0014 F029     		cmp	r1, #240
+ 1062 0016 15D8     		bhi	.L54
+ 225:Core/MyLib/Src/sx127x.c **** 
+ 1063              		.loc 1 225 3 is_stmt 1 view .LVU216
+ 225:Core/MyLib/Src/sx127x.c **** 
+ 1064              		.loc 1 225 22 is_stmt 0 view .LVU217
+ 1065 0018 1E31     		adds	r1, r1, #30
+ 225:Core/MyLib/Src/sx127x.c **** 
+ 1066              		.loc 1 225 27 view .LVU218
+ 1067 001a 144B     		ldr	r3, .L58
+ 1068 001c 83FB0123 		smull	r2, r3, r3, r1
+ 1069 0020 C917     		asrs	r1, r1, #31
+ 1070 0022 C1EBA301 		rsb	r1, r1, r3, asr #2
+ 225:Core/MyLib/Src/sx127x.c **** 
+ 1071              		.loc 1 225 11 view .LVU219
+ 1072 0026 8DF80710 		strb	r1, [sp, #7]
+ 1073 002a 0BE0     		b	.L54
+ 1074              	.LVL90:
+ 1075              	.L55:
+ 218:Core/MyLib/Src/sx127x.c **** 	if(current>240)
+ 1076              		.loc 1 218 11 view .LVU220
+ 1077 002c 2D21     		movs	r1, #45
+ 1078              	.LVL91:
+ 1079              	.L52:
+ 222:Core/MyLib/Src/sx127x.c **** 		OcpTrim = (current - 45)/5;
+ 1080              		.loc 1 222 2 is_stmt 1 view .LVU221
+ 222:Core/MyLib/Src/sx127x.c **** 		OcpTrim = (current - 45)/5;
+ 1081              		.loc 1 222 4 is_stmt 0 view .LVU222
+ 1082 002e 7829     		cmp	r1, #120
+ 1083 0030 F0D8     		bhi	.L53
+ 223:Core/MyLib/Src/sx127x.c **** 	else if(current <= 240)
+ 1084              		.loc 1 223 3 is_stmt 1 view .LVU223
+ 223:Core/MyLib/Src/sx127x.c **** 	else if(current <= 240)
+ 1085              		.loc 1 223 22 is_stmt 0 view .LVU224
+ 1086 0032 2D39     		subs	r1, r1, #45
+ 1087              	.LVL92:
+ 223:Core/MyLib/Src/sx127x.c **** 	else if(current <= 240)
+ 1088              		.loc 1 223 27 view .LVU225
+ 1089 0034 0D4B     		ldr	r3, .L58
+ 1090 0036 83FB0123 		smull	r2, r3, r3, r1
+ 1091 003a C917     		asrs	r1, r1, #31
+ 1092 003c C1EB6301 		rsb	r1, r1, r3, asr #1
+ 223:Core/MyLib/Src/sx127x.c **** 	else if(current <= 240)
+ 1093              		.loc 1 223 11 view .LVU226
+ 1094 0040 8DF80710 		strb	r1, [sp, #7]
+ 1095              	.L54:
+ 228:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OCP, &OcpTrim, 1);
+ 1096              		.loc 1 228 5 is_stmt 1 view .LVU227
+ 228:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_OCP, &OcpTrim, 1);
+ 1097              		.loc 1 228 13 is_stmt 0 view .LVU228
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 29
+
+
+ 1098 0044 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1099 0048 23F02E03 		bic	r3, r3, #46
+ 1100 004c 43F02003 		orr	r3, r3, #32
+ 1101 0050 8DF80730 		strb	r3, [sp, #7]
+ 229:Core/MyLib/Src/sx127x.c ****     // // enable or disable +20 dBm option on PA_BOOST pin
+ 1102              		.loc 1 229 2 is_stmt 1 view .LVU229
+ 1103 0054 0123     		movs	r3, #1
+ 1104 0056 0DF10702 		add	r2, sp, #7
+ 1105 005a 0B21     		movs	r1, #11
+ 1106 005c FFF7FEFF 		bl	writeReg
+ 1107              	.LVL93:
+ 242:Core/MyLib/Src/sx127x.c **** }
+ 1108              		.loc 1 242 5 view .LVU230
+ 1109 0060 0120     		movs	r0, #1
+ 1110 0062 FFF7FEFF 		bl	HAL_Delay
+ 1111              	.LVL94:
+ 243:Core/MyLib/Src/sx127x.c **** 
+ 1112              		.loc 1 243 1 is_stmt 0 view .LVU231
+ 1113 0066 03B0     		add	sp, sp, #12
+ 1114              	.LCFI41:
+ 1115              		.cfi_def_cfa_offset 4
+ 1116              		@ sp needed
+ 1117 0068 5DF804FB 		ldr	pc, [sp], #4
+ 1118              	.L59:
+ 1119              		.align	2
+ 1120              	.L58:
+ 1121 006c 67666666 		.word	1717986919
+ 1122              		.cfi_endproc
+ 1123              	.LFE80:
+ 1125              		.section	.text.setLNA,"ax",%progbits
+ 1126              		.align	1
+ 1127              		.global	setLNA
+ 1128              		.syntax unified
+ 1129              		.thumb
+ 1130              		.thumb_func
+ 1131              		.fpu softvfp
+ 1133              	setLNA:
+ 1134              	.LVL95:
+ 1135              	.LFB81:
+ 246:Core/MyLib/Src/sx127x.c ****     uint8_t lna;
+ 1136              		.loc 1 246 37 is_stmt 1 view -0
+ 1137              		.cfi_startproc
+ 1138              		@ args = 0, pretend = 0, frame = 8
+ 1139              		@ frame_needed = 0, uses_anonymous_args = 0
+ 246:Core/MyLib/Src/sx127x.c ****     uint8_t lna;
+ 1140              		.loc 1 246 37 is_stmt 0 view .LVU233
+ 1141 0000 10B5     		push	{r4, lr}
+ 1142              	.LCFI42:
+ 1143              		.cfi_def_cfa_offset 8
+ 1144              		.cfi_offset 4, -8
+ 1145              		.cfi_offset 14, -4
+ 1146 0002 82B0     		sub	sp, sp, #8
+ 1147              	.LCFI43:
+ 1148              		.cfi_def_cfa_offset 16
+ 1149 0004 0446     		mov	r4, r0
+ 247:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_LNA, &lna, 1);
+ 1150              		.loc 1 247 5 is_stmt 1 view .LVU234
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 30
+
+
+ 248:Core/MyLib/Src/sx127x.c ****     lna |= 0x20;
+ 1151              		.loc 1 248 5 view .LVU235
+ 1152 0006 0123     		movs	r3, #1
+ 1153 0008 0DF10702 		add	r2, sp, #7
+ 1154 000c 0C21     		movs	r1, #12
+ 1155 000e FFF7FEFF 		bl	readReg
+ 1156              	.LVL96:
+ 249:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_LNA, &lna, 1);
+ 1157              		.loc 1 249 5 view .LVU236
+ 249:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_LNA, &lna, 1);
+ 1158              		.loc 1 249 9 is_stmt 0 view .LVU237
+ 1159 0012 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1160 0016 43F02003 		orr	r3, r3, #32
+ 1161 001a 8DF80730 		strb	r3, [sp, #7]
+ 250:Core/MyLib/Src/sx127x.c **** }
+ 1162              		.loc 1 250 2 is_stmt 1 view .LVU238
+ 1163 001e 0123     		movs	r3, #1
+ 1164 0020 0DF10702 		add	r2, sp, #7
+ 1165 0024 0C21     		movs	r1, #12
+ 1166 0026 2046     		mov	r0, r4
+ 1167 0028 FFF7FEFF 		bl	writeReg
+ 1168              	.LVL97:
+ 251:Core/MyLib/Src/sx127x.c **** 
+ 1169              		.loc 1 251 1 is_stmt 0 view .LVU239
+ 1170 002c 02B0     		add	sp, sp, #8
+ 1171              	.LCFI44:
+ 1172              		.cfi_def_cfa_offset 8
+ 1173              		@ sp needed
+ 1174 002e 10BD     		pop	{r4, pc}
+ 251:Core/MyLib/Src/sx127x.c **** 
+ 1175              		.loc 1 251 1 view .LVU240
+ 1176              		.cfi_endproc
+ 1177              	.LFE81:
+ 1179              		.section	.text.setSpreadingFactor,"ax",%progbits
+ 1180              		.align	1
+ 1181              		.global	setSpreadingFactor
+ 1182              		.syntax unified
+ 1183              		.thumb
+ 1184              		.thumb_func
+ 1185              		.fpu softvfp
+ 1187              	setSpreadingFactor:
+ 1188              	.LVL98:
+ 1189              	.LFB82:
+ 253:Core/MyLib/Src/sx127x.c ****     uint8_t	data;
+ 1190              		.loc 1 253 68 is_stmt 1 view -0
+ 1191              		.cfi_startproc
+ 1192              		@ args = 0, pretend = 0, frame = 8
+ 1193              		@ frame_needed = 0, uses_anonymous_args = 0
+ 253:Core/MyLib/Src/sx127x.c ****     uint8_t	data;
+ 1194              		.loc 1 253 68 is_stmt 0 view .LVU242
+ 1195 0000 30B5     		push	{r4, r5, lr}
+ 1196              	.LCFI45:
+ 1197              		.cfi_def_cfa_offset 12
+ 1198              		.cfi_offset 4, -12
+ 1199              		.cfi_offset 5, -8
+ 1200              		.cfi_offset 14, -4
+ 1201 0002 83B0     		sub	sp, sp, #12
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 31
+
+
+ 1202              	.LCFI46:
+ 1203              		.cfi_def_cfa_offset 24
+ 1204 0004 0446     		mov	r4, r0
+ 254:Core/MyLib/Src/sx127x.c **** 	uint8_t	read;
+ 1205              		.loc 1 254 5 is_stmt 1 view .LVU243
+ 255:Core/MyLib/Src/sx127x.c ****     uint8_t SF;
+ 1206              		.loc 1 255 2 view .LVU244
+ 256:Core/MyLib/Src/sx127x.c **** 
+ 1207              		.loc 1 256 5 view .LVU245
+ 258:Core/MyLib/Src/sx127x.c **** 		SF = 12;
+ 1208              		.loc 1 258 2 view .LVU246
+ 258:Core/MyLib/Src/sx127x.c **** 		SF = 12;
+ 1209              		.loc 1 258 10 is_stmt 0 view .LVU247
+ 1210 0006 0B7B     		ldrb	r3, [r1, #12]	@ zero_extendqisi2
+ 1211              	.LVL99:
+ 260:Core/MyLib/Src/sx127x.c **** 		SF = 7;
+ 1212              		.loc 1 260 2 is_stmt 1 view .LVU248
+ 260:Core/MyLib/Src/sx127x.c **** 		SF = 7;
+ 1213              		.loc 1 260 4 is_stmt 0 view .LVU249
+ 1214 0008 062B     		cmp	r3, #6
+ 1215 000a 2BD9     		bls	.L64
+ 1216 000c 0C25     		movs	r5, #12
+ 1217              	.L63:
+ 1218              	.LVL100:
+ 263:Core/MyLib/Src/sx127x.c **** 
+ 1219              		.loc 1 263 2 is_stmt 1 view .LVU250
+ 1220 000e 0123     		movs	r3, #1
+ 1221 0010 0DF10602 		add	r2, sp, #6
+ 1222 0014 1E21     		movs	r1, #30
+ 1223              	.LVL101:
+ 263:Core/MyLib/Src/sx127x.c **** 
+ 1224              		.loc 1 263 2 is_stmt 0 view .LVU251
+ 1225 0016 2046     		mov	r0, r4
+ 1226              	.LVL102:
+ 263:Core/MyLib/Src/sx127x.c **** 
+ 1227              		.loc 1 263 2 view .LVU252
+ 1228 0018 FFF7FEFF 		bl	readReg
+ 1229              	.LVL103:
+ 265:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 1230              		.loc 1 265 2 is_stmt 1 view .LVU253
+ 265:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 1231              		.loc 1 265 27 is_stmt 0 view .LVU254
+ 1232 001c 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 1233 0020 03F00F03 		and	r3, r3, #15
+ 265:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 1234              		.loc 1 265 19 view .LVU255
+ 1235 0024 03EB0513 		add	r3, r3, r5, lsl #4
+ 265:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 1236              		.loc 1 265 7 view .LVU256
+ 1237 0028 8DF80730 		strb	r3, [sp, #7]
+ 266:Core/MyLib/Src/sx127x.c **** 
+ 1238              		.loc 1 266 2 is_stmt 1 view .LVU257
+ 1239 002c 0123     		movs	r3, #1
+ 1240 002e 0DF10702 		add	r2, sp, #7
+ 1241 0032 1E21     		movs	r1, #30
+ 1242 0034 2046     		mov	r0, r4
+ 1243 0036 FFF7FEFF 		bl	writeReg
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 32
+
+
+ 1244              	.LVL104:
+ 268:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_DETECTION_OPTIMIZE, &optimize, 1);
+ 1245              		.loc 1 268 5 view .LVU258
+ 268:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_DETECTION_OPTIMIZE, &optimize, 1);
+ 1246              		.loc 1 268 13 is_stmt 0 view .LVU259
+ 1247 003a 0323     		movs	r3, #3
+ 1248 003c 8DF80530 		strb	r3, [sp, #5]
+ 269:Core/MyLib/Src/sx127x.c ****     uint8_t threshold = 0x0A;
+ 1249              		.loc 1 269 5 is_stmt 1 view .LVU260
+ 1250 0040 0123     		movs	r3, #1
+ 1251 0042 0DF10502 		add	r2, sp, #5
+ 1252 0046 3121     		movs	r1, #49
+ 1253 0048 2046     		mov	r0, r4
+ 1254 004a FFF7FEFF 		bl	writeReg
+ 1255              	.LVL105:
+ 270:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_DETECTION_THRESHOLD, &threshold, 1);
+ 1256              		.loc 1 270 5 view .LVU261
+ 270:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_DETECTION_THRESHOLD, &threshold, 1);
+ 1257              		.loc 1 270 13 is_stmt 0 view .LVU262
+ 1258 004e 0A23     		movs	r3, #10
+ 1259 0050 8DF80430 		strb	r3, [sp, #4]
+ 271:Core/MyLib/Src/sx127x.c **** 
+ 1260              		.loc 1 271 5 is_stmt 1 view .LVU263
+ 1261 0054 0123     		movs	r3, #1
+ 1262 0056 01AA     		add	r2, sp, #4
+ 1263 0058 3721     		movs	r1, #55
+ 1264 005a 2046     		mov	r0, r4
+ 1265 005c FFF7FEFF 		bl	writeReg
+ 1266              	.LVL106:
+ 273:Core/MyLib/Src/sx127x.c **** 
+ 1267              		.loc 1 273 1 is_stmt 0 view .LVU264
+ 1268 0060 03B0     		add	sp, sp, #12
+ 1269              	.LCFI47:
+ 1270              		.cfi_remember_state
+ 1271              		.cfi_def_cfa_offset 12
+ 1272              		@ sp needed
+ 1273 0062 30BD     		pop	{r4, r5, pc}
+ 1274              	.LVL107:
+ 1275              	.L64:
+ 1276              	.LCFI48:
+ 1277              		.cfi_restore_state
+ 261:Core/MyLib/Src/sx127x.c **** 
+ 1278              		.loc 1 261 6 view .LVU265
+ 1279 0064 0725     		movs	r5, #7
+ 1280 0066 D2E7     		b	.L63
+ 1281              		.cfi_endproc
+ 1282              	.LFE82:
+ 1284              		.section	.text.setPayloadLengt,"ax",%progbits
+ 1285              		.align	1
+ 1286              		.global	setPayloadLengt
+ 1287              		.syntax unified
+ 1288              		.thumb
+ 1289              		.thumb_func
+ 1290              		.fpu softvfp
+ 1292              	setPayloadLengt:
+ 1293              	.LVL108:
+ 1294              	.LFB83:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 33
+
+
+ 275:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PAYLOAD_LENGTH, &modem->payloadLength, 1);
+ 1295              		.loc 1 275 65 is_stmt 1 view -0
+ 1296              		.cfi_startproc
+ 1297              		@ args = 0, pretend = 0, frame = 0
+ 1298              		@ frame_needed = 0, uses_anonymous_args = 0
+ 275:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PAYLOAD_LENGTH, &modem->payloadLength, 1);
+ 1299              		.loc 1 275 65 is_stmt 0 view .LVU267
+ 1300 0000 08B5     		push	{r3, lr}
+ 1301              	.LCFI49:
+ 1302              		.cfi_def_cfa_offset 8
+ 1303              		.cfi_offset 3, -8
+ 1304              		.cfi_offset 14, -4
+ 276:Core/MyLib/Src/sx127x.c **** }
+ 1305              		.loc 1 276 5 is_stmt 1 view .LVU268
+ 1306 0002 0123     		movs	r3, #1
+ 1307 0004 01F11402 		add	r2, r1, #20
+ 1308 0008 2221     		movs	r1, #34
+ 1309              	.LVL109:
+ 276:Core/MyLib/Src/sx127x.c **** }
+ 1310              		.loc 1 276 5 is_stmt 0 view .LVU269
+ 1311 000a FFF7FEFF 		bl	writeReg
+ 1312              	.LVL110:
+ 277:Core/MyLib/Src/sx127x.c **** 
+ 1313              		.loc 1 277 1 view .LVU270
+ 1314 000e 08BD     		pop	{r3, pc}
+ 1315              		.cfi_endproc
+ 1316              	.LFE83:
+ 1318              		.section	.text.sendMode,"ax",%progbits
+ 1319              		.align	1
+ 1320              		.global	sendMode
+ 1321              		.syntax unified
+ 1322              		.thumb
+ 1323              		.thumb_func
+ 1324              		.fpu softvfp
+ 1326              	sendMode:
+ 1327              	.LVL111:
+ 1328              	.LFB77:
+ 147:Core/MyLib/Src/sx127x.c ****     uint8_t data;
+ 1329              		.loc 1 147 58 is_stmt 1 view -0
+ 1330              		.cfi_startproc
+ 1331              		@ args = 0, pretend = 0, frame = 8
+ 1332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147:Core/MyLib/Src/sx127x.c ****     uint8_t data;
+ 1333              		.loc 1 147 58 is_stmt 0 view .LVU272
+ 1334 0000 10B5     		push	{r4, lr}
+ 1335              	.LCFI50:
+ 1336              		.cfi_def_cfa_offset 8
+ 1337              		.cfi_offset 4, -8
+ 1338              		.cfi_offset 14, -4
+ 1339 0002 82B0     		sub	sp, sp, #8
+ 1340              	.LCFI51:
+ 1341              		.cfi_def_cfa_offset 16
+ 1342 0004 0446     		mov	r4, r0
+ 148:Core/MyLib/Src/sx127x.c ****     uint8_t read;
+ 1343              		.loc 1 148 5 is_stmt 1 view .LVU273
+ 149:Core/MyLib/Src/sx127x.c ****     setPayloadLengt(hspi, modem);
+ 1344              		.loc 1 149 5 view .LVU274
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 34
+
+
+ 150:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_OP_MODE, &read, 1);
+ 1345              		.loc 1 150 5 view .LVU275
+ 1346 0006 FFF7FEFF 		bl	setPayloadLengt
+ 1347              	.LVL112:
+ 151:Core/MyLib/Src/sx127x.c ****     data = read;
+ 1348              		.loc 1 151 5 view .LVU276
+ 1349 000a 0123     		movs	r3, #1
+ 1350 000c 0DF10602 		add	r2, sp, #6
+ 1351 0010 1946     		mov	r1, r3
+ 1352 0012 2046     		mov	r0, r4
+ 1353 0014 FFF7FEFF 		bl	readReg
+ 1354              	.LVL113:
+ 152:Core/MyLib/Src/sx127x.c ****     data |= SX127X_MODE_TX | 0x80;
+ 1355              		.loc 1 152 5 view .LVU277
+ 152:Core/MyLib/Src/sx127x.c ****     data |= SX127X_MODE_TX | 0x80;
+ 1356              		.loc 1 152 10 is_stmt 0 view .LVU278
+ 1357 0018 9DF80630 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 1358 001c 8DF80730 		strb	r3, [sp, #7]
+ 153:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 1359              		.loc 1 153 5 is_stmt 1 view .LVU279
+ 153:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 1360              		.loc 1 153 10 is_stmt 0 view .LVU280
+ 1361 0020 63F07C03 		orn	r3, r3, #124
+ 1362 0024 8DF80730 		strb	r3, [sp, #7]
+ 154:Core/MyLib/Src/sx127x.c **** }
+ 1363              		.loc 1 154 5 is_stmt 1 view .LVU281
+ 1364 0028 0123     		movs	r3, #1
+ 1365 002a 0DF10702 		add	r2, sp, #7
+ 1366 002e 1946     		mov	r1, r3
+ 1367 0030 2046     		mov	r0, r4
+ 1368 0032 FFF7FEFF 		bl	writeReg
+ 1369              	.LVL114:
+ 155:Core/MyLib/Src/sx127x.c **** 
+ 1370              		.loc 1 155 1 is_stmt 0 view .LVU282
+ 1371 0036 02B0     		add	sp, sp, #8
+ 1372              	.LCFI52:
+ 1373              		.cfi_def_cfa_offset 8
+ 1374              		@ sp needed
+ 1375 0038 10BD     		pop	{r4, pc}
+ 155:Core/MyLib/Src/sx127x.c **** 
+ 1376              		.loc 1 155 1 view .LVU283
+ 1377              		.cfi_endproc
+ 1378              	.LFE77:
+ 1380              		.section	.text.setCRC_ON,"ax",%progbits
+ 1381              		.align	1
+ 1382              		.global	setCRC_ON
+ 1383              		.syntax unified
+ 1384              		.thumb
+ 1385              		.thumb_func
+ 1386              		.fpu softvfp
+ 1388              	setCRC_ON:
+ 1389              	.LVL115:
+ 1390              	.LFB84:
+ 279:Core/MyLib/Src/sx127x.c ****     uint8_t read, data;
+ 1391              		.loc 1 279 40 is_stmt 1 view -0
+ 1392              		.cfi_startproc
+ 1393              		@ args = 0, pretend = 0, frame = 8
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 35
+
+
+ 1394              		@ frame_needed = 0, uses_anonymous_args = 0
+ 279:Core/MyLib/Src/sx127x.c ****     uint8_t read, data;
+ 1395              		.loc 1 279 40 is_stmt 0 view .LVU285
+ 1396 0000 10B5     		push	{r4, lr}
+ 1397              	.LCFI53:
+ 1398              		.cfi_def_cfa_offset 8
+ 1399              		.cfi_offset 4, -8
+ 1400              		.cfi_offset 14, -4
+ 1401 0002 82B0     		sub	sp, sp, #8
+ 1402              	.LCFI54:
+ 1403              		.cfi_def_cfa_offset 16
+ 1404 0004 0446     		mov	r4, r0
+ 280:Core/MyLib/Src/sx127x.c **** 
+ 1405              		.loc 1 280 5 is_stmt 1 view .LVU286
+ 282:Core/MyLib/Src/sx127x.c **** 
+ 1406              		.loc 1 282 2 view .LVU287
+ 1407 0006 0123     		movs	r3, #1
+ 1408 0008 0DF10702 		add	r2, sp, #7
+ 1409 000c 1E21     		movs	r1, #30
+ 1410 000e FFF7FEFF 		bl	readReg
+ 1411              	.LVL116:
+ 284:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 1412              		.loc 1 284 2 view .LVU288
+ 284:Core/MyLib/Src/sx127x.c **** 	writeReg(hspi, SX127X_REG_MODEM_CONFIG_2, &data, 1);
+ 1413              		.loc 1 284 7 is_stmt 0 view .LVU289
+ 1414 0012 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 1415 0016 43F00703 		orr	r3, r3, #7
+ 1416 001a 8DF80630 		strb	r3, [sp, #6]
+ 285:Core/MyLib/Src/sx127x.c **** }
+ 1417              		.loc 1 285 2 is_stmt 1 view .LVU290
+ 1418 001e 0123     		movs	r3, #1
+ 1419 0020 0DF10602 		add	r2, sp, #6
+ 1420 0024 1E21     		movs	r1, #30
+ 1421 0026 2046     		mov	r0, r4
+ 1422 0028 FFF7FEFF 		bl	writeReg
+ 1423              	.LVL117:
+ 286:Core/MyLib/Src/sx127x.c **** 
+ 1424              		.loc 1 286 1 is_stmt 0 view .LVU291
+ 1425 002c 02B0     		add	sp, sp, #8
+ 1426              	.LCFI55:
+ 1427              		.cfi_def_cfa_offset 8
+ 1428              		@ sp needed
+ 1429 002e 10BD     		pop	{r4, pc}
+ 286:Core/MyLib/Src/sx127x.c **** 
+ 1430              		.loc 1 286 1 view .LVU292
+ 1431              		.cfi_endproc
+ 1432              	.LFE84:
+ 1434              		.section	.text.setTimeout,"ax",%progbits
+ 1435              		.align	1
+ 1436              		.global	setTimeout
+ 1437              		.syntax unified
+ 1438              		.thumb
+ 1439              		.thumb_func
+ 1440              		.fpu softvfp
+ 1442              	setTimeout:
+ 1443              	.LVL118:
+ 1444              	.LFB85:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 36
+
+
+ 288:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0xFF;
+ 1445              		.loc 1 288 41 is_stmt 1 view -0
+ 1446              		.cfi_startproc
+ 1447              		@ args = 0, pretend = 0, frame = 8
+ 1448              		@ frame_needed = 0, uses_anonymous_args = 0
+ 288:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0xFF;
+ 1449              		.loc 1 288 41 is_stmt 0 view .LVU294
+ 1450 0000 00B5     		push	{lr}
+ 1451              	.LCFI56:
+ 1452              		.cfi_def_cfa_offset 4
+ 1453              		.cfi_offset 14, -4
+ 1454 0002 83B0     		sub	sp, sp, #12
+ 1455              	.LCFI57:
+ 1456              		.cfi_def_cfa_offset 16
+ 289:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_SYMB_TIMEOUT, &data, 1);
+ 1457              		.loc 1 289 5 is_stmt 1 view .LVU295
+ 289:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_SYMB_TIMEOUT, &data, 1);
+ 1458              		.loc 1 289 13 is_stmt 0 view .LVU296
+ 1459 0004 FF23     		movs	r3, #255
+ 1460 0006 8DF80730 		strb	r3, [sp, #7]
+ 290:Core/MyLib/Src/sx127x.c **** }
+ 1461              		.loc 1 290 5 is_stmt 1 view .LVU297
+ 1462 000a 0123     		movs	r3, #1
+ 1463 000c 0DF10702 		add	r2, sp, #7
+ 1464 0010 1F21     		movs	r1, #31
+ 1465 0012 FFF7FEFF 		bl	writeReg
+ 1466              	.LVL119:
+ 291:Core/MyLib/Src/sx127x.c **** 
+ 1467              		.loc 1 291 1 is_stmt 0 view .LVU298
+ 1468 0016 03B0     		add	sp, sp, #12
+ 1469              	.LCFI58:
+ 1470              		.cfi_def_cfa_offset 4
+ 1471              		@ sp needed
+ 1472 0018 5DF804FB 		ldr	pc, [sp], #4
+ 1473              		.cfi_endproc
+ 1474              	.LFE85:
+ 1476              		.section	.text.setBandwidth_CRC,"ax",%progbits
+ 1477              		.align	1
+ 1478              		.global	setBandwidth_CRC
+ 1479              		.syntax unified
+ 1480              		.thumb
+ 1481              		.thumb_func
+ 1482              		.fpu softvfp
+ 1484              	setBandwidth_CRC:
+ 1485              	.LVL120:
+ 1486              	.LFB86:
+ 297:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0;
+ 1487              		.loc 1 297 66 is_stmt 1 view -0
+ 1488              		.cfi_startproc
+ 1489              		@ args = 0, pretend = 0, frame = 8
+ 1490              		@ frame_needed = 0, uses_anonymous_args = 0
+ 297:Core/MyLib/Src/sx127x.c ****     uint8_t data = 0;
+ 1491              		.loc 1 297 66 is_stmt 0 view .LVU300
+ 1492 0000 00B5     		push	{lr}
+ 1493              	.LCFI59:
+ 1494              		.cfi_def_cfa_offset 4
+ 1495              		.cfi_offset 14, -4
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 37
+
+
+ 1496 0002 83B0     		sub	sp, sp, #12
+ 1497              	.LCFI60:
+ 1498              		.cfi_def_cfa_offset 16
+ 298:Core/MyLib/Src/sx127x.c ****     data = (modem->BandWidth << 4) | (modem->crcRate << 1) | (0 << 0);
+ 1499              		.loc 1 298 5 is_stmt 1 view .LVU301
+ 298:Core/MyLib/Src/sx127x.c ****     data = (modem->BandWidth << 4) | (modem->crcRate << 1) | (0 << 0);
+ 1500              		.loc 1 298 13 is_stmt 0 view .LVU302
+ 1501 0004 0023     		movs	r3, #0
+ 1502 0006 8DF80730 		strb	r3, [sp, #7]
+ 299:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 1503              		.loc 1 299 5 is_stmt 1 view .LVU303
+ 299:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 1504              		.loc 1 299 18 is_stmt 0 view .LVU304
+ 1505 000a 4A7B     		ldrb	r2, [r1, #13]	@ zero_extendqisi2
+ 299:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 1506              		.loc 1 299 44 view .LVU305
+ 1507 000c 8B7B     		ldrb	r3, [r1, #14]	@ zero_extendqisi2
+ 299:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 1508              		.loc 1 299 54 view .LVU306
+ 1509 000e 5B00     		lsls	r3, r3, #1
+ 299:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 1510              		.loc 1 299 60 view .LVU307
+ 1511 0010 43EA0213 		orr	r3, r3, r2, lsl #4
+ 299:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_MODEM_CONFIG_1, &data, 1);
+ 1512              		.loc 1 299 10 view .LVU308
+ 1513 0014 8DF80730 		strb	r3, [sp, #7]
+ 300:Core/MyLib/Src/sx127x.c **** }
+ 1514              		.loc 1 300 5 is_stmt 1 view .LVU309
+ 1515 0018 0123     		movs	r3, #1
+ 1516 001a 0DF10702 		add	r2, sp, #7
+ 1517 001e 1D21     		movs	r1, #29
+ 1518              	.LVL121:
+ 300:Core/MyLib/Src/sx127x.c **** }
+ 1519              		.loc 1 300 5 is_stmt 0 view .LVU310
+ 1520 0020 FFF7FEFF 		bl	writeReg
+ 1521              	.LVL122:
+ 301:Core/MyLib/Src/sx127x.c **** 
+ 1522              		.loc 1 301 1 view .LVU311
+ 1523 0024 03B0     		add	sp, sp, #12
+ 1524              	.LCFI61:
+ 1525              		.cfi_def_cfa_offset 4
+ 1526              		@ sp needed
+ 1527 0026 5DF804FB 		ldr	pc, [sp], #4
+ 1528              		.cfi_endproc
+ 1529              	.LFE86:
+ 1531              		.section	.text.setPreamble,"ax",%progbits
+ 1532              		.align	1
+ 1533              		.global	setPreamble
+ 1534              		.syntax unified
+ 1535              		.thumb
+ 1536              		.thumb_func
+ 1537              		.fpu softvfp
+ 1539              	setPreamble:
+ 1540              	.LVL123:
+ 1541              	.LFB87:
+ 303:Core/MyLib/Src/sx127x.c ****     uint8_t msb = modem->Preamble >> 8;
+ 1542              		.loc 1 303 61 is_stmt 1 view -0
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 38
+
+
+ 1543              		.cfi_startproc
+ 1544              		@ args = 0, pretend = 0, frame = 8
+ 1545              		@ frame_needed = 0, uses_anonymous_args = 0
+ 303:Core/MyLib/Src/sx127x.c ****     uint8_t msb = modem->Preamble >> 8;
+ 1546              		.loc 1 303 61 is_stmt 0 view .LVU313
+ 1547 0000 10B5     		push	{r4, lr}
+ 1548              	.LCFI62:
+ 1549              		.cfi_def_cfa_offset 8
+ 1550              		.cfi_offset 4, -8
+ 1551              		.cfi_offset 14, -4
+ 1552 0002 82B0     		sub	sp, sp, #8
+ 1553              	.LCFI63:
+ 1554              		.cfi_def_cfa_offset 16
+ 1555 0004 0446     		mov	r4, r0
+ 304:Core/MyLib/Src/sx127x.c ****     uint8_t lsb = modem->Preamble >> 0;
+ 1556              		.loc 1 304 5 is_stmt 1 view .LVU314
+ 304:Core/MyLib/Src/sx127x.c ****     uint8_t lsb = modem->Preamble >> 0;
+ 1557              		.loc 1 304 24 is_stmt 0 view .LVU315
+ 1558 0006 4B8A     		ldrh	r3, [r1, #18]
+ 304:Core/MyLib/Src/sx127x.c ****     uint8_t lsb = modem->Preamble >> 0;
+ 1559              		.loc 1 304 13 view .LVU316
+ 1560 0008 1A0A     		lsrs	r2, r3, #8
+ 1561 000a 8DF80720 		strb	r2, [sp, #7]
+ 305:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PREAMBLE_MSB, &msb, 1);
+ 1562              		.loc 1 305 5 is_stmt 1 view .LVU317
+ 305:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PREAMBLE_MSB, &msb, 1);
+ 1563              		.loc 1 305 13 is_stmt 0 view .LVU318
+ 1564 000e 8DF80630 		strb	r3, [sp, #6]
+ 306:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PREAMBLE_LSB, &lsb, 1);
+ 1565              		.loc 1 306 5 is_stmt 1 view .LVU319
+ 1566 0012 0123     		movs	r3, #1
+ 1567 0014 0DF10702 		add	r2, sp, #7
+ 1568 0018 2021     		movs	r1, #32
+ 1569              	.LVL124:
+ 306:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_PREAMBLE_LSB, &lsb, 1);
+ 1570              		.loc 1 306 5 is_stmt 0 view .LVU320
+ 1571 001a FFF7FEFF 		bl	writeReg
+ 1572              	.LVL125:
+ 307:Core/MyLib/Src/sx127x.c **** }
+ 1573              		.loc 1 307 5 is_stmt 1 view .LVU321
+ 1574 001e 0123     		movs	r3, #1
+ 1575 0020 0DF10602 		add	r2, sp, #6
+ 1576 0024 2121     		movs	r1, #33
+ 1577 0026 2046     		mov	r0, r4
+ 1578 0028 FFF7FEFF 		bl	writeReg
+ 1579              	.LVL126:
+ 308:Core/MyLib/Src/sx127x.c **** 
+ 1580              		.loc 1 308 1 is_stmt 0 view .LVU322
+ 1581 002c 02B0     		add	sp, sp, #8
+ 1582              	.LCFI64:
+ 1583              		.cfi_def_cfa_offset 8
+ 1584              		@ sp needed
+ 1585 002e 10BD     		pop	{r4, pc}
+ 308:Core/MyLib/Src/sx127x.c **** 
+ 1586              		.loc 1 308 1 view .LVU323
+ 1587              		.cfi_endproc
+ 1588              	.LFE87:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 39
+
+
+ 1590              		.section	.text.sx127x_Init,"ax",%progbits
+ 1591              		.align	1
+ 1592              		.global	sx127x_Init
+ 1593              		.syntax unified
+ 1594              		.thumb
+ 1595              		.thumb_func
+ 1596              		.fpu softvfp
+ 1598              	sx127x_Init:
+ 1599              	.LVL127:
+ 1600              	.LFB65:
+   5:Core/MyLib/Src/sx127x.c ****     uint8_t version;
+ 1601              		.loc 1 5 64 is_stmt 1 view -0
+ 1602              		.cfi_startproc
+ 1603              		@ args = 0, pretend = 0, frame = 8
+ 1604              		@ frame_needed = 0, uses_anonymous_args = 0
+   5:Core/MyLib/Src/sx127x.c ****     uint8_t version;
+ 1605              		.loc 1 5 64 is_stmt 0 view .LVU325
+ 1606 0000 30B5     		push	{r4, r5, lr}
+ 1607              	.LCFI65:
+ 1608              		.cfi_def_cfa_offset 12
+ 1609              		.cfi_offset 4, -12
+ 1610              		.cfi_offset 5, -8
+ 1611              		.cfi_offset 14, -4
+ 1612 0002 83B0     		sub	sp, sp, #12
+ 1613              	.LCFI66:
+ 1614              		.cfi_def_cfa_offset 24
+ 1615 0004 0446     		mov	r4, r0
+ 1616 0006 0D46     		mov	r5, r1
+   6:Core/MyLib/Src/sx127x.c ****     readReg(hspi, SX127X_REG_VERSION, &version, 1);
+ 1617              		.loc 1 6 5 is_stmt 1 view .LVU326
+   7:Core/MyLib/Src/sx127x.c ****     if (version != 0x12){
+ 1618              		.loc 1 7 5 view .LVU327
+ 1619 0008 0123     		movs	r3, #1
+ 1620 000a 0DF10702 		add	r2, sp, #7
+ 1621 000e 4221     		movs	r1, #66
+ 1622              	.LVL128:
+   7:Core/MyLib/Src/sx127x.c ****     if (version != 0x12){
+ 1623              		.loc 1 7 5 is_stmt 0 view .LVU328
+ 1624 0010 FFF7FEFF 		bl	readReg
+ 1625              	.LVL129:
+   8:Core/MyLib/Src/sx127x.c ****         return 0;
+ 1626              		.loc 1 8 5 is_stmt 1 view .LVU329
+   8:Core/MyLib/Src/sx127x.c ****         return 0;
+ 1627              		.loc 1 8 17 is_stmt 0 view .LVU330
+ 1628 0014 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+   8:Core/MyLib/Src/sx127x.c ****         return 0;
+ 1629              		.loc 1 8 8 view .LVU331
+ 1630 0018 122B     		cmp	r3, #18
+ 1631 001a 02D0     		beq	.L82
+   9:Core/MyLib/Src/sx127x.c ****     }
+ 1632              		.loc 1 9 16 view .LVU332
+ 1633 001c 0020     		movs	r0, #0
+ 1634              	.L79:
+  34:Core/MyLib/Src/sx127x.c **** 
+ 1635              		.loc 1 34 1 view .LVU333
+ 1636 001e 03B0     		add	sp, sp, #12
+ 1637              	.LCFI67:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 40
+
+
+ 1638              		.cfi_remember_state
+ 1639              		.cfi_def_cfa_offset 12
+ 1640              		@ sp needed
+ 1641 0020 30BD     		pop	{r4, r5, pc}
+ 1642              	.LVL130:
+ 1643              	.L82:
+ 1644              	.LCFI68:
+ 1645              		.cfi_restore_state
+  11:Core/MyLib/Src/sx127x.c ****     // Включение режима LoRa
+ 1646              		.loc 1 11 5 is_stmt 1 view .LVU334
+ 1647 0022 0021     		movs	r1, #0
+ 1648 0024 2046     		mov	r0, r4
+ 1649 0026 FFF7FEFF 		bl	gotoMode
+ 1650              	.LVL131:
+  13:Core/MyLib/Src/sx127x.c ****     setFrequency(hspi, modem);
+ 1651              		.loc 1 13 5 view .LVU335
+ 1652 002a 2046     		mov	r0, r4
+ 1653 002c FFF7FEFF 		bl	setLoRaMode
+ 1654              	.LVL132:
+  14:Core/MyLib/Src/sx127x.c ****     // Мощность передатчика
+ 1655              		.loc 1 14 5 view .LVU336
+ 1656 0030 2946     		mov	r1, r5
+ 1657 0032 2046     		mov	r0, r4
+ 1658 0034 FFF7FEFF 		bl	setFrequency
+ 1659              	.LVL133:
+  16:Core/MyLib/Src/sx127x.c ****     setOCP(hspi, 100);
+ 1660              		.loc 1 16 5 view .LVU337
+ 1661 0038 0122     		movs	r2, #1
+ 1662 003a 2946     		mov	r1, r5
+ 1663 003c 2046     		mov	r0, r4
+ 1664 003e FFF7FEFF 		bl	setPower
+ 1665              	.LVL134:
+  17:Core/MyLib/Src/sx127x.c ****     // Установка начального адриса FIFO
+ 1666              		.loc 1 17 5 view .LVU338
+ 1667 0042 6421     		movs	r1, #100
+ 1668 0044 2046     		mov	r0, r4
+ 1669 0046 FFF7FEFF 		bl	setOCP
+ 1670              	.LVL135:
+  19:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_FIFO_RX_BASE_ADDR, &modem->RX_Base_Address, 1);
+ 1671              		.loc 1 19 5 view .LVU339
+ 1672 004a 0123     		movs	r3, #1
+ 1673 004c 05F10A02 		add	r2, r5, #10
+ 1674 0050 0E21     		movs	r1, #14
+ 1675 0052 2046     		mov	r0, r4
+ 1676 0054 FFF7FEFF 		bl	writeReg
+ 1677              	.LVL136:
+  20:Core/MyLib/Src/sx127x.c ****     // Усиление низкого уровня шума
+ 1678              		.loc 1 20 5 view .LVU340
+ 1679 0058 0123     		movs	r3, #1
+ 1680 005a 05F10B02 		add	r2, r5, #11
+ 1681 005e 0F21     		movs	r1, #15
+ 1682 0060 2046     		mov	r0, r4
+ 1683 0062 FFF7FEFF 		bl	writeReg
+ 1684              	.LVL137:
+  22:Core/MyLib/Src/sx127x.c ****     // Автоматическая регулировка усиления
+ 1685              		.loc 1 22 5 view .LVU341
+ 1686 0066 2046     		mov	r0, r4
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 41
+
+
+ 1687 0068 FFF7FEFF 		bl	setLNA
+ 1688              	.LVL138:
+  24:Core/MyLib/Src/sx127x.c ****     setSpreadingFactor(hspi, modem);
+ 1689              		.loc 1 24 5 view .LVU342
+ 1690 006c 2046     		mov	r0, r4
+ 1691 006e FFF7FEFF 		bl	setAGC
+ 1692              	.LVL139:
+  25:Core/MyLib/Src/sx127x.c ****     setBandwidth_CRC(hspi, modem);
+ 1693              		.loc 1 25 5 view .LVU343
+ 1694 0072 2946     		mov	r1, r5
+ 1695 0074 2046     		mov	r0, r4
+ 1696 0076 FFF7FEFF 		bl	setSpreadingFactor
+ 1697              	.LVL140:
+  26:Core/MyLib/Src/sx127x.c ****     setTimeout(hspi);
+ 1698              		.loc 1 26 5 view .LVU344
+ 1699 007a 2946     		mov	r1, r5
+ 1700 007c 2046     		mov	r0, r4
+ 1701 007e FFF7FEFF 		bl	setBandwidth_CRC
+ 1702              	.LVL141:
+  27:Core/MyLib/Src/sx127x.c ****     setCRC_ON(hspi);
+ 1703              		.loc 1 27 5 view .LVU345
+ 1704 0082 2046     		mov	r0, r4
+ 1705 0084 FFF7FEFF 		bl	setTimeout
+ 1706              	.LVL142:
+  28:Core/MyLib/Src/sx127x.c ****     setPreamble(hspi, modem);
+ 1707              		.loc 1 28 5 view .LVU346
+ 1708 0088 2046     		mov	r0, r4
+ 1709 008a FFF7FEFF 		bl	setCRC_ON
+ 1710              	.LVL143:
+  29:Core/MyLib/Src/sx127x.c ****     // setPayloadLengt(hspi, modem);
+ 1711              		.loc 1 29 5 view .LVU347
+ 1712 008e 2946     		mov	r1, r5
+ 1713 0090 2046     		mov	r0, r4
+ 1714 0092 FFF7FEFF 		bl	setPreamble
+ 1715              	.LVL144:
+  32:Core/MyLib/Src/sx127x.c ****     return 1;
+ 1716              		.loc 1 32 5 view .LVU348
+ 1717 0096 0121     		movs	r1, #1
+ 1718 0098 2046     		mov	r0, r4
+ 1719 009a FFF7FEFF 		bl	gotoMode
+ 1720              	.LVL145:
+  33:Core/MyLib/Src/sx127x.c **** }
+ 1721              		.loc 1 33 5 view .LVU349
+  33:Core/MyLib/Src/sx127x.c **** }
+ 1722              		.loc 1 33 12 is_stmt 0 view .LVU350
+ 1723 009e 0120     		movs	r0, #1
+ 1724 00a0 BDE7     		b	.L79
+ 1725              		.cfi_endproc
+ 1726              	.LFE65:
+ 1728              		.section	.text.setStandby,"ax",%progbits
+ 1729              		.align	1
+ 1730              		.global	setStandby
+ 1731              		.syntax unified
+ 1732              		.thumb
+ 1733              		.thumb_func
+ 1734              		.fpu softvfp
+ 1736              	setStandby:
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 42
+
+
+ 1737              	.LVL146:
+ 1738              	.LFB88:
+ 310:Core/MyLib/Src/sx127x.c ****     uint8_t data = SX127X_LONG_RANGE_MODE | SX127X_MODE_STDBY;
+ 1739              		.loc 1 310 41 is_stmt 1 view -0
+ 1740              		.cfi_startproc
+ 1741              		@ args = 0, pretend = 0, frame = 8
+ 1742              		@ frame_needed = 0, uses_anonymous_args = 0
+ 310:Core/MyLib/Src/sx127x.c ****     uint8_t data = SX127X_LONG_RANGE_MODE | SX127X_MODE_STDBY;
+ 1743              		.loc 1 310 41 is_stmt 0 view .LVU352
+ 1744 0000 00B5     		push	{lr}
+ 1745              	.LCFI69:
+ 1746              		.cfi_def_cfa_offset 4
+ 1747              		.cfi_offset 14, -4
+ 1748 0002 83B0     		sub	sp, sp, #12
+ 1749              	.LCFI70:
+ 1750              		.cfi_def_cfa_offset 16
+ 311:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 1751              		.loc 1 311 5 is_stmt 1 view .LVU353
+ 311:Core/MyLib/Src/sx127x.c ****     writeReg(hspi, SX127X_REG_OP_MODE, &data, 1);
+ 1752              		.loc 1 311 13 is_stmt 0 view .LVU354
+ 1753 0004 8123     		movs	r3, #129
+ 1754 0006 8DF80730 		strb	r3, [sp, #7]
+ 312:Core/MyLib/Src/sx127x.c **** }
+ 1755              		.loc 1 312 5 is_stmt 1 view .LVU355
+ 1756 000a 0123     		movs	r3, #1
+ 1757 000c 0DF10702 		add	r2, sp, #7
+ 1758 0010 1946     		mov	r1, r3
+ 1759 0012 FFF7FEFF 		bl	writeReg
+ 1760              	.LVL147:
+ 313:Core/MyLib/Src/sx127x.c **** 
+ 1761              		.loc 1 313 1 is_stmt 0 view .LVU356
+ 1762 0016 03B0     		add	sp, sp, #12
+ 1763              	.LCFI71:
+ 1764              		.cfi_def_cfa_offset 4
+ 1765              		@ sp needed
+ 1766 0018 5DF804FB 		ldr	pc, [sp], #4
+ 1767              		.cfi_endproc
+ 1768              	.LFE88:
+ 1770              		.text
+ 1771              	.Letext0:
+ 1772              		.file 2 "d:\\vscode\\arm_none_eabi\\10_2020-q4-major\\arm-none-eabi\\include\\machine\\_default_ty
+ 1773              		.file 3 "d:\\vscode\\arm_none_eabi\\10_2020-q4-major\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1774              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103x6.h"
+ 1775              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1776              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1777              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h"
+ 1778              		.file 8 "Core/MyLib/Inc/sx127x.h"
+ 1779              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 1780              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 43
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sx127x.c
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:16     .text.readReg:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:24     .text.readReg:00000000 readReg
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:101    .text.readReg:0000004c $d
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:106    .text.available:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:113    .text.available:00000000 available
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:157    .text.sx127x_Receive:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:164    .text.sx127x_Receive:00000000 sx127x_Receive
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:225    .text.parserPacket:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:232    .text.parserPacket:00000000 parserPacket
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:263    .text.writeReg:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:270    .text.writeReg:00000000 writeReg
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:346    .text.writeReg:0000004c $d
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:351    .text.setLoRaMode:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:358    .text.setLoRaMode:00000000 setLoRaMode
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:406    .text.gotoMode:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:413    .text.gotoMode:00000000 gotoMode
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:532    .text.sx127x_Transmit:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:539    .text.sx127x_Transmit:00000000 sx127x_Transmit
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:678    .text.setAGC:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:685    .text.setAGC:00000000 setAGC
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:720    .text.setSyncWord:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:727    .text.setSyncWord:00000000 setSyncWord
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:754    .text.LoRa_begin:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:761    .text.LoRa_begin:00000000 LoRa_begin
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:814    .text.setBandwidth:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:821    .text.setBandwidth:00000000 setBandwidth
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:848    .text.setSleep:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:855    .text.setSleep:00000000 setSleep
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:891    .text.setFrequency:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:898    .text.setFrequency:00000000 setFrequency
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:980    .text.setFrequency:00000058 $d
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:985    .text.setPower:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:992    .text.setPower:00000000 setPower
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1021   .text.setOCP:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1028   .text.setOCP:00000000 setOCP
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1121   .text.setOCP:0000006c $d
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1126   .text.setLNA:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1133   .text.setLNA:00000000 setLNA
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1180   .text.setSpreadingFactor:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1187   .text.setSpreadingFactor:00000000 setSpreadingFactor
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1285   .text.setPayloadLengt:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1292   .text.setPayloadLengt:00000000 setPayloadLengt
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1319   .text.sendMode:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1326   .text.sendMode:00000000 sendMode
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1381   .text.setCRC_ON:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1388   .text.setCRC_ON:00000000 setCRC_ON
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1435   .text.setTimeout:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1442   .text.setTimeout:00000000 setTimeout
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1477   .text.setBandwidth_CRC:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1484   .text.setBandwidth_CRC:00000000 setBandwidth_CRC
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1532   .text.setPreamble:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1539   .text.setPreamble:00000000 setPreamble
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1591   .text.sx127x_Init:00000000 $t
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1598   .text.sx127x_Init:00000000 sx127x_Init
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1729   .text.setStandby:00000000 $t
+ARM GAS  C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s 			page 44
+
+
+C:\Users\vladk\AppData\Local\Temp\ccnfQ8YO.s:1736   .text.setStandby:00000000 setStandby
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_SPI_Transmit
+HAL_SPI_Receive
+__aeabi_uldivmod
+HAL_Delay
