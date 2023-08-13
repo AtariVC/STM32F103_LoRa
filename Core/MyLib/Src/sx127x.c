@@ -27,7 +27,7 @@ uint8_t sx127x_Init(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
     setTimeout(hspi);
     setCRC_ON(hspi);
     setPreamble(hspi, modem);
-    // setPayloadLengt(hspi, modem);
+    // setPayloadLength(hspi, modem);
     // setSyncWord(hspi, modem);
     gotoMode(hspi, SX127X_MODE_STDBY);
     return 1;
@@ -63,14 +63,28 @@ uint8_t sx127x_Transmit(SPI_HandleTypeDef* hspi, sx127x_cfg* modem, uint8_t* dat
     // setStandby(hspi, modem);
 }
 
-uint8_t sx127x_Receive(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
-    if (!available(hspi, modem)){
-        return -1;
-    }
-    modem->bufferIndex++;
-    uint8_t TXdata;
-    readReg(hspi, SX127X_REG_FIFO, &TXdata, 1);
-    return TXdata;
+uint8_t sx127x_Receive(SPI_HandleTypeDef* hspi, sx127x_cfg* modem, uint8_t* data, uint8_t len){
+	uint8_t read;
+	uint8_t number_of_bytes;
+	uint8_t min = 0;
+    uint8_t irq = 0xFF;
+
+	for(int i=0; i<len; i++)
+		data[i]=0;
+
+	gotoMode(hspi, SX127X_MODE_STDBY);
+	readReg(hspi, SX127X_REG_IRQ_FLAGS, &read, 1);
+	if((read & 0x40) != 0){
+		writeReg(hspi, SX127X_REG_IRQ_FLAGS, &irq, 1);
+		readReg(hspi, SX127X_REG_RX_NB_BYTES, &number_of_bytes, 1);
+		readReg(hspi, SX127X_REG_FIFO_RX_CURRENT_ADDR, &read, 1);
+		writeReg(hspi, SX127X_REG_FIFO_ADDR_PTR, &read, 1);
+		min = len >= number_of_bytes ? number_of_bytes : len;
+		for(int i=0; i<min; i++)
+			readReg(hspi, SX127X_REG_FIFO_TX_BASE_ADDR, &data[i], 1);
+	}
+	gotoMode(hspi, SX127X_MODE_RX_CONTINUOUS);
+    return min;
 }
 
 void setLoRaMode(SPI_HandleTypeDef* hspi){
@@ -272,7 +286,7 @@ void setSpreadingFactor(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
 
 }
 
-void setPayloadLengt(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
+void setPayloadLength(SPI_HandleTypeDef* hspi, sx127x_cfg* modem){
     writeReg(hspi, SX127X_REG_PAYLOAD_LENGTH, &modem->payloadLength, 1);
 }
 

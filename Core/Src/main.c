@@ -96,6 +96,7 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     uint8_t data[2] = {0x13, 0x34};
+    uint8_t receive_data[2];
 
     // init sx127x
     if (!sx127x_Init(&hspi1, &modem)){
@@ -106,8 +107,8 @@ int main(void)
     uint8_t status_TX = 0;
     while(1){
       /* USER CODE END WHILE */
-      status_TX = sx127x_Transmit(&hspi1, &modem, data, 2);
-      HAL_Delay(5000);
+      sx127x_Receive(&hspi1, &modem, receive_data, 2);
+    //   HAL_Delay(5000);
       /* USER CODE BEGIN 3 */
     }
     /* USER CODE END 3 */

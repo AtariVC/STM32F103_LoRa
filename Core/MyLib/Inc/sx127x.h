@@ -183,7 +183,7 @@ void setTimeout(SPI_HandleTypeDef* hspi);
 uint8_t sx127x_Transmit(SPI_HandleTypeDef* hspi, sx127x_cfg* modem, uint8_t* data, uint8_t len);
 void sendMode(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
 void setBandwidth(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
-void setPayloadLengt(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
+void setPayloadLength(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
 void setSyncWord(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
 uint8_t available(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
 uint8_t sx127x_Recive(SPI_HandleTypeDef* hspi, sx127x_cfg* modem);
